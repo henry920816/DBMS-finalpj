@@ -2,17 +2,15 @@
 // 資料庫連接設定
 $servername = "localhost";
 $username = "root";
-$password = "12345678"; // 替換為您的 MySQL 密碼
-$dbname = "olympic"; // 替換為您的資料庫名稱
+$password = "12345678"; 
+$dbname = "olympic"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// 檢查連接是否成功
 if ($conn->connect_error) {
     die("資料庫連接失敗：" . $conn->connect_error);
 }
 
-// 查詢選手數據
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $athletes = [];
 if (!empty($search)) {
