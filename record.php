@@ -1,15 +1,13 @@
 <?php
-// 靜態模擬資料
+// 模擬資料
 $records = [
     ['sport' => '100m Sprint', 'record' => '9.58s', 'holder' => 'Usain Bolt', 'start_date' => '2009-08-16'],
     ['sport' => 'Marathon', 'record' => '2:01:39', 'holder' => 'Eliud Kipchoge', 'start_date' => '2018-09-16'],
     ['sport' => 'High Jump', 'record' => '2.45m', 'holder' => 'Javier Sotomayor', 'start_date' => '1993-07-27'],
 ];
 
-// 接收下拉選單選擇的運動項目
 $selectedSport = isset($_GET['sport']) ? trim($_GET['sport']) : '';
 
-// 篩選資料
 $filteredRecords = array_filter($records, function ($record) use ($selectedSport) {
     return empty($selectedSport) || $record['sport'] === $selectedSport;
 });
