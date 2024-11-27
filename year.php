@@ -1,22 +1,3 @@
-<?php
-
-$conn = new mysqli();
-
-if ($conn->connect_error) {
-    die("資料庫連接失敗：" . $conn->connect_error);
-}
-
-$sql = "SELECT DISTINCT year FROM olympic_games_summary ORDER BY year ASC";
-$result = $conn->query($sql);
-
-$years = [];
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $years[] = $row['year'];
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -41,20 +22,45 @@ if ($result) {
         <!-- Filter Section -->
         <div id="content" style="padding-top: 80px; padding-left: 20px; padding-right: 20px">
             <div style="text-align: center; font-size: 18px; padding-bottom: 20px">
-                Select an Olympic year to view the top three players for all sports in that year.
+                Here you can see the top three players/countries of a sports event in a given year.
             </div>
             <div id="form">
-                <form method="GET" action="year_query.php">
-                    <label for="year" class="oxygen-bold">Select Year</label>
-                    <select id="year" name="year" class="oxygen-light">
-                        <option value="" disabled selected>Choose a year</option>
-                        <?php foreach ($years as $year): ?>
-                            <option value="<?php echo htmlspecialchars($year); ?>"><?php echo htmlspecialchars($year); ?></option>
-                        <?php endforeach; ?>
+                <form name="form">
+                    <label class="oxygen-bold">Select</label>
+                    <select id="year-option">
+                        <option id="year-option-default" value="0">Select Year</option>
                     </select>
-                    <input type="submit" value="Submit" id="submit" class="oxygen-bold">
+                    <input type="submit" value="Search" id="submit" class="oxygen-bold">
                 </form>
             </div>
+            <div id="table">
+                <table>
+                    <colgroup>
+                        <col style="width: 25%">
+                        <col style="width: 25%">
+                        <col style="width: 15%">
+                        <col style="width: 15%">
+                        <col style="width: 15%">
+                    </colgroup>
+                    <thead>
+                        <tr class="attr">
+                            <th>Event</th>
+                            <th>Sport</th>
+                            <th style="background-color: #FFE142">Gold</th>
+                            <th style="background-color: #C0C0C0">Silver</th>
+                            <th style="background-color: #D18841">Bronze</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-content"></tbody>
+                </table>
+                <div id="default">Search the year of the game to show the list!</div>
+            </div>
         </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
+            // import jquery //
+        </script>
+        <script src="year.js">
+            // includes query requests, search, and webpage animations //
+        </script>
     </body>
 </html>
