@@ -37,5 +37,14 @@
             <a href="record.php" class="menu-button">Record</a>
         </div>
     </div>
+
+    <!-- JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
+        // import jquery //
+    </script>
+    <script>
+        // initialize the database if there's none
+        $.ajax({url: "init.php"});
+    </script>
 </body>
 </html>
