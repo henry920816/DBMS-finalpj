@@ -9,50 +9,33 @@
     <!-- Import Fonts -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Alatsi&family=Oxygen:wght@300;400;700&display=swap');
-
-        .menu-button {
-            display: block;
-            text-align: center;
-            width: 300px;
-            margin: 15px auto; 
-            padding: 15px;
-            font-size: 18px;
-            font-family: 'Oxygen', sans-serif;
-            background-color: #A0522D; 
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .menu-button:hover {
-            background-color: #A0522D; 
-            box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
-        }
     </style>
 </head>
 
 <body>
     <!-- NavBar -->
     <div id="navBarContainer">
-        <a class="menuBtn" href="index.php"><i class="material-icons home">home</i></a>
+        <a class="menuBtn" href="index.php" style="width: 0; padding-left: 0; padding-right: 0; overflow: hidden"><i class="material-icons home">h</i></a>
         <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS or smth idk</b></p>
     </div>
 
     <!-- Main Content -->
     <div id="content" style="padding-top: 80px; padding-left: 20px; padding-right: 20px">
-        <div style="text-align: center; font-size: 18px; padding-bottom: 20px">
-            <h1>Please Select the Function：</h1>
+        <div style="text-align: center; font-size: 18px; padding-bottom: 20px; width: 80%; margin: 0 auto">
+            <h1>Welcome!</h1>
+            <p>The Olympic Games are considered the world's foremost sports competition, 
+                with more than 200 teams, representing sovereign states and territories, participating.
+                This website serves the purpose of quickly search the profile, record, and medals of players and countries.
+                You can also add/delete/update records for future events.
+                Click on any of the button below to browse the features.
+            </p>
         </div>
         <div id="form">
-            <a href="player2.php" class="menu-button">Profiles</a>
-            <a href="year.php" class="menu-button">Year</a>
+            <a href="player.php" class="menu-button">Athletes</a>
+            <a href="year.php" class="menu-button">Games</a>
             <a href="country.php" class="menu-button">Countries</a>
             <a href="record.php" class="menu-button">Record</a>
         </div>
     </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </body>
 </html>

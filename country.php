@@ -1,27 +1,13 @@
-<?php
-// 靜態模擬資料
-$countries = [
-    ['country' => 'USA', 'gold' => 39, 'silver' => 41, 'bronze' => 33, 'points' => 233],
-    ['country' => 'China', 'gold' => 38, 'silver' => 32, 'bronze' => 18, 'points' => 196],
-    ['country' => 'Japan', 'gold' => 27, 'silver' => 14, 'bronze' => 17, 'points' => 126],
-];
-
-// 接收篩選條件
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$filteredCountries = array_filter($countries, function ($country) use ($search) {
-    return empty($search) || stripos($country['country'], $search) !== false;
-});
-?>
-
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
-        <title>Country Rankings</title>
+        <title>Country Search</title>
         <link href="style.css" rel="stylesheet" type="text/css">
         <!-- Import Icons -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <!-- Import Fonts -->
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Alatsi&family=Oxygen:wght@300;400;700&display=swap');
         </style>
@@ -36,53 +22,62 @@ $filteredCountries = array_filter($countries, function ($country) use ($search) 
         <!-- Filter Section -->
         <div id="content" style="padding-top: 80px; padding-left: 20px; padding-right: 20px">
             <div style="text-align: center; font-size: 18px; padding-bottom: 20px">
-                Search and view rankings by country.
+                This page shows the list of all countries ever attended in Olympics.
+                You can rank the list by <span class="tooltip">points<span class="tooltiptext">Golds*3+Silver*2+Bronze*1</span></span>, medal counts, or names.
+                Click on the country to get its profile.
             </div>
             <div id="form">
-                <form method="GET" action="country.php">
-                    <label for="search" class="oxygen-bold">Enter Country Name</label>
-                    <input type="text" id="search" name="search" class="oxygen-light" value="<?php echo htmlspecialchars($search); ?>" placeholder="eg: USA">
-                    <input type="submit" value="Search" id="submit" class="oxygen-bold">
+                <form name="form">
+                    <label class="oxygen-bold">Sort By</label>
+                    <select id="country-sort-option">
+                        <option value="0">Points</option>
+                        <option value="1">Gold</option>
+                        <option value="2">Silver</option>
+                        <option value="3">Bronze</option>
+                        <option value="4">Name</option>
+                    </select>
+                    <select style="border-radius: 0" id="country-sort-order">
+                        <option value="0">Descend</option>
+                        <option value="1">Ascend</option>
+                    </select>
+                    <input type="submit" value="Go" id="submit" class="oxygen-bold">
                 </form>
             </div>
             <div id="table">
                 <table>
                     <colgroup>
+                        <col style="width: 7.5%">
+                        <col style="width: 32.5%">
                         <col style="width: 20%">
-                        <col style="width: 15%">
-                        <col style="width: 15%">
-                        <col style="width: 15%">
-                        <col style="width: 15%">
+                        <col style="width: 20%">
                         <col style="width: 20%">
                     </colgroup>
-                    <tr class="attr">
-                        <th>Country</th>
-                        <th>Gold</th>
-                        <th>Silver</th>
-                        <th>Bronze</th>
-                        <th>Points</th>
-                        <th>Rank</th>
-                    </tr>
-                    <?php if (!empty($filteredCountries)): ?>
-                        <?php 
-                        $rank = 1; 
-                        foreach ($filteredCountries as $country): ?>
-                            <tr class="row">
-                                <td><?php echo htmlspecialchars($country['country']); ?></td>
-                                <td><a href="country_query.php?country=<?php echo urlencode($country['country']); ?>&medal=Gold"><?php echo htmlspecialchars($country['gold']); ?></a></td>
-                                <td><a href="country_query.php?country=<?php echo urlencode($country['country']); ?>&medal=Silver"><?php echo htmlspecialchars($country['silver']); ?></a></td>
-                                <td><a href="country_query.php?country=<?php echo urlencode($country['country']); ?>&medal=Bronze"><?php echo htmlspecialchars($country['bronze']); ?></a></td>
-                                <td><?php echo htmlspecialchars($country['points']); ?></td>
-                                <td><?php echo $rank++; ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr class="row">
-                            <td colspan="6" style="text-align: center;">No countries found.</td>
+                    <thead>
+                        <tr class="attr">
+                            <th>Rank</th>
+                            <th>Country</th>
+                            <th style="background-color: #FFE142">Gold</th>
+                            <th style="background-color: #C0C0C0">Silver</th>
+                            <th style="background-color: #D18841">Bronze</th>
                         </tr>
-                    <?php endif; ?>
+                    </thead>
+                    <tbody id="table-content"></tbody>
                 </table>
+                <div id="default">Loading Query...</div>
+            </div>
+            <div id="profile">
+                <div id="profile-content">
+                    <div id="inner">
+                        <span id="test"></span>
+                    </div>
+                </div>
             </div>
         </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
+            // import jquery //
+        </script>
+        <script src="country.js">
+            // includes query requests, search, and webpage animations //
+        </script>
     </body>
 </html>

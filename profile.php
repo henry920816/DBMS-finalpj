@@ -1,10 +1,6 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "12345678";
-$dbname = "olympic"; 
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli();
 
 if ($conn->connect_error) {
     die("資料庫連接失敗：" . $conn->connect_error);
