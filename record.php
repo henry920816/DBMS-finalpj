@@ -24,12 +24,12 @@
                 Select a sport to view its record and details.
             </div>
             <div id="form">
-                <form method="GET" action="record.php">
-                    <label for="sport" class="oxygen-bold">Select Sport</label>
-                    <select id="sport" name="sport" class="oxygen-light">
-                        <option value="">All Sports</option>
+                <form name="form">
+                    <label class="oxygen-bold">Select</label>
+                    <select id="record-option">
+                        <option id="record-option-default" value="0">Select Event</option>
                     </select>
-                    <input type="submit" value="Filter" id="submit" class="oxygen-bold">
+                    <input type="submit" value="Search" id="submit" class="oxygen-bold">
                 </form>
             </div>
             <div id="table">
