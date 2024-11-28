@@ -17,7 +17,7 @@
         <!-- NavBar -->
         <div id="navBarContainer">
             <a class="menuBtn" href="index.php"><i class="material-icons home">home</i></a>
-            <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS or smth idk</b></p>
+            <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS</b></p>
         </div>
         <!-- Filter Section -->
         <div id="content" style="padding-top: 80px; padding-left: 20px; padding-right: 20px">
@@ -62,11 +62,7 @@
                 </div>
             </div>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
-            // import jquery //
-        </script>
-        <script src="player.js">
-            // includes query requests, search, and webpage animations //
-        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="player.js"></script>
     </body>
 </html>
