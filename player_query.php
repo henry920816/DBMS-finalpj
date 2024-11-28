@@ -1,65 +1,83 @@
 <?php
 include("database_connection.php");
-header('Content-Type: application/json');
 
-if (!isset($_GET['m'])) {
-    echo json_encode(['error' => 'No mode provided']);
-    exit;
-}
-
-$mode = $_GET['m'];
-
-if ($mode == 'getYears') {
-    $query = "SELECT DISTINCT year FROM olympic_event_results ORDER BY year";
+if ($_GET['m'] == 'list') {
+    $query = "SELECT athlete_id, name, country, born, sex FROM olympic_athlete_biography ORDER BY country, name";
     $result = $conn->query($query);
-
-    if ($result) {
-        $years = array();
+    if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $years[] = $row['year'];
+            echo "<tr class='row' data-value='{$row['athlete_id']}'>
+                    <td>{$row['name']}</td>
+                    <td>{$row['country']}</td>
+                    <td>{$row['born']}</td>
+                    <td>{$row['sex']}</td>
+                  </tr>";
         }
-        echo json_encode($years);
-    } else {
-        error_log("Failed to execute query: " . $conn->error);
-        echo json_encode(['error' => 'Failed to fetch years']);
     }
-    exit;
 }
 
-if ($mode == 'search') {
-    $year = intval($_GET['y']);
+if ($_GET['m'] == 'search') {
+    $name = trim($_GET['p']); 
+    $name = strtolower($name);
 
-    $query = "SELECT E.event_title, S.sport, G.gold_medalist, G.silver_medalist, G.bronze_medalist
-              FROM olympic_event_results E
-              JOIN olympic_sports S ON E.sport_id = S.sport_id
-              LEFT JOIN (
-                  SELECT event_id,
-                         MAX(CASE WHEN medal = 'Gold' THEN athlete_name END) AS gold_medalist,
-                         MAX(CASE WHEN medal = 'Silver' THEN athlete_name END) AS silver_medalist,
-                         MAX(CASE WHEN medal = 'Bronze' THEN athlete_name END) AS bronze_medalist
-                  FROM olympic_medal_results
-                  GROUP BY event_id
-              ) G ON E.event_id = G.event_id
-              WHERE E.year = '$year'
-              ORDER BY E.event_title";
-
+    $query = "SELECT athlete_id, name, country, born, sex 
+              FROM olympic_athlete_biography 
+              WHERE LOWER(name) = '$name' 
+              ORDER BY country, name";
     $result = $conn->query($query);
 
-    if ($result && $result->num_rows > 0) {
+    if ($result->num_rows == 0) {
+        $query = "SELECT athlete_id, name, country, born, sex 
+                  FROM olympic_athlete_biography 
+                  WHERE LOWER(name) LIKE '%$name%' 
+                  ORDER BY country, name";
+        $result = $conn->query($query);
+    }
+
+    if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            echo "<tr>
-                    <td>{$row['event_title']}</td>
-                    <td>{$row['sport']}</td>
-                    <td>{$row['gold_medalist']}</td>
-                    <td>{$row['silver_medalist']}</td>
-                    <td>{$row['bronze_medalist']}</td>
+            echo "<tr class='row' data-value='{$row['athlete_id']}'>
+                    <td>{$row['name']}</td>
+                    <td>{$row['country']}</td>
+                    <td>{$row['born']}</td>
+                    <td>{$row['sex']}</td>
                   </tr>";
         }
     } else {
-        echo ""; 
+        echo "<p>找不到符合條件的運動員。</p>";
     }
-    exit;
 }
 
-echo json_encode(['error' => 'Invalid mode']);
+if ($_GET['m'] == 'profile') {
+    $playerId = $_GET['p'];
+    $query = "SELECT A.name, A.sex, A.born, A.height, A.weight, A.country,
+              COUNT(CASE WHEN E.medal = 'Gold' THEN 1 END) AS gold_medals,
+              COUNT(CASE WHEN E.medal = 'Silver' THEN 1 END) AS silver_medals,
+              COUNT(CASE WHEN E.medal = 'Bronze' THEN 1 END) AS bronze_medals,
+              GROUP_CONCAT(DISTINCT E.event) AS events
+              FROM olympic_athlete_biography A
+              LEFT JOIN olympic_athlete_event_details E ON A.athlete_id = E.athlete_id
+              WHERE A.athlete_id = '$playerId'
+              GROUP BY A.athlete_id";
+
+    $result = $conn->query($query);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<div class='profile-header'>{$row['name']}</div>";
+            echo "<div class='profile-content'>";
+            echo "<p class='profile-detail'><strong>性別:</strong> {$row['sex']}</p>";
+            echo "<p class='profile-detail'><strong>出生日期:</strong> {$row['born']}</p>";
+            echo "<p class='profile-detail'><strong>身高:</strong> {$row['height']} cm</p>";
+            echo "<p class='profile-detail'><strong>體重:</strong> {$row['weight']} kg</p>";
+            echo "<p class='profile-detail'><strong>國家:</strong> {$row['country']}</p>";
+            echo "<p class='profile-detail'><strong>金牌數:</strong> {$row['gold_medals']}</p>";
+            echo "<p class='profile-detail'><strong>銀牌數:</strong> {$row['silver_medals']}</p>";
+            echo "<p class='profile-detail'><strong>銅牌數:</strong> {$row['bronze_medals']}</p>";
+            echo "<p class='profile-detail event-list'><strong>參加的項目:</strong> {$row['events']}</p>";
+            echo "</div>";
+        }
+    } else {
+        echo "<p>沒有找到該運動員的資料。</p>";
+    }
+}
 ?>
