@@ -1,79 +1,65 @@
 <?php
-    // read init.php if you run into any problems
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $database = "db";
+include("database_connection.php");
+header('Content-Type: application/json');
 
-    // create connection
-    $conn = new mysqli($servername, $username, $password, $database);
+if (!isset($_GET['m'])) {
+    echo json_encode(['error' => 'No mode provided']);
+    exit;
+}
 
-    // Check connection
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
+$mode = $_GET['m'];
+
+if ($mode == 'getYears') {
+    $query = "SELECT DISTINCT year FROM olympic_event_results ORDER BY year";
+    $result = $conn->query($query);
+
+    if ($result) {
+        $years = array();
+        while ($row = $result->fetch_assoc()) {
+            $years[] = $row['year'];
+        }
+        echo json_encode($years);
+    } else {
+        error_log("Failed to execute query: " . $conn->error);
+        echo json_encode(['error' => 'Failed to fetch years']);
     }
-    
-    $mode = $_REQUEST['m'];
-    switch ($mode) {
-        // Search Player
-        case 'search':
-            $name = $_REQUEST['p'];
-            $sql = "SELECT A.name, 
-                    A.sex, 
-                    A.born, 
-                    A.height, 
-                    A.weight, 
-                    A.country, 
-                    A.athlete_id,
-                    COUNT(E.athlete_id) AS total_events, -- Total events participated in
-                    COUNT(CASE WHEN E.medal = 'Gold' THEN 1 END) AS gold_medals, -- Gold medal count
-                    COUNT(CASE WHEN E.medal = 'Silver' THEN 1 END) AS silver_medals, -- Silver medal count
-                    COUNT(CASE WHEN E.medal = 'Bronze' THEN 1 END) AS bronze_medals, -- Bronze medal count
-                    GROUP_CONCAT(DISTINCT E.event) AS events -- List of distinct events
-                    FROM Athlete A
-                    LEFT JOIN Details E ON A.athlete_id = E.athlete_id
-                    WHERE A.name LIKE '%$name%'
-                    GROUP BY A.athlete_id";
-            
-            // check
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $rowString = '<tr class="row"> data-value="'.$row["athlete_id"].'">
-                                        <td>'.$row["name"].'</td>
-                                        <td>'.$row["country"].'</td>
-                                        <td>'.$row["born"].'</td>
-                                        <td>'.$row["sex"].'</td>
-                                  </tr>';
-                    echo $rowString;
-                }
-            }
-            else {
-                $rowString = '<tr class="search-empty">
-                                    <td colspan="4">No Players Found</td>
-                              </tr>';
-                echo $rowString;
-            }
-            break;
-        
-        // Display Profile
-        case 'profile':
-            // also temp
-            echo '
-                    <p><strong>姓名：</strong>Name</p>
-                    <p><strong>性別：</strong>Sex</p>
-                    <p><strong>出生日期：</strong>B.Year</p>
-                    <p><strong>身高：</strong>Height cm</p>
-                    <p><strong>體重：</strong>Weight kg</p>
-                    <p><strong>國家：</strong>Country</p>
-                    <p><strong>備註：</strong>Notes</p>';
-            break;
-        
-        // Edit Record
-        case 'edit':
-            break;
-    }
+    exit;
+}
 
-    // close connection
-    $conn->close();
+if ($mode == 'search') {
+    $year = intval($_GET['y']);
+
+    $query = "SELECT E.event_title, S.sport, G.gold_medalist, G.silver_medalist, G.bronze_medalist
+              FROM olympic_event_results E
+              JOIN olympic_sports S ON E.sport_id = S.sport_id
+              LEFT JOIN (
+                  SELECT event_id,
+                         MAX(CASE WHEN medal = 'Gold' THEN athlete_name END) AS gold_medalist,
+                         MAX(CASE WHEN medal = 'Silver' THEN athlete_name END) AS silver_medalist,
+                         MAX(CASE WHEN medal = 'Bronze' THEN athlete_name END) AS bronze_medalist
+                  FROM olympic_medal_results
+                  GROUP BY event_id
+              ) G ON E.event_id = G.event_id
+              WHERE E.year = '$year'
+              ORDER BY E.event_title";
+
+    $result = $conn->query($query);
+
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>
+                    <td>{$row['event_title']}</td>
+                    <td>{$row['sport']}</td>
+                    <td>{$row['gold_medalist']}</td>
+                    <td>{$row['silver_medalist']}</td>
+                    <td>{$row['bronze_medalist']}</td>
+                  </tr>";
+        }
+    } else {
+        echo ""; 
+    }
+    exit;
+}
+
+echo json_encode(['error' => 'Invalid mode']);
 ?>
