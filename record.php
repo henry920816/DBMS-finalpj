@@ -1,24 +1,9 @@
-<?php
-// 模擬資料
-$records = [
-    ['sport' => '100m Sprint', 'record' => '9.58s', 'holder' => 'Usain Bolt', 'start_date' => '2009-08-16'],
-    ['sport' => 'Marathon', 'record' => '2:01:39', 'holder' => 'Eliud Kipchoge', 'start_date' => '2018-09-16'],
-    ['sport' => 'High Jump', 'record' => '2.45m', 'holder' => 'Javier Sotomayor', 'start_date' => '1993-07-27'],
-];
-
-$selectedSport = isset($_GET['sport']) ? trim($_GET['sport']) : '';
-
-$filteredRecords = array_filter($records, function ($record) use ($selectedSport) {
-    return empty($selectedSport) || $record['sport'] === $selectedSport;
-});
-?>
-
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
-        <title>Sports Records</title>
+        <title>Record Search</title>
         <link href="style.css" rel="stylesheet" type="text/css">
         <!-- Import Icons -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -42,12 +27,7 @@ $filteredRecords = array_filter($records, function ($record) use ($selectedSport
                 <form method="GET" action="record.php">
                     <label for="sport" class="oxygen-bold">Select Sport</label>
                     <select id="sport" name="sport" class="oxygen-light">
-                        <option value="" <?php echo empty($selectedSport) ? 'selected' : ''; ?>>All Sports</option>
-                        <?php foreach ($records as $record): ?>
-                            <option value="<?php echo htmlspecialchars($record['sport']); ?>" <?php echo $selectedSport === $record['sport'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($record['sport']); ?>
-                            </option>
-                        <?php endforeach; ?>
+                        <option value="">All Sports</option>
                     </select>
                     <input type="submit" value="Filter" id="submit" class="oxygen-bold">
                 </form>
@@ -60,28 +40,24 @@ $filteredRecords = array_filter($records, function ($record) use ($selectedSport
                         <col style="width: 30%">
                         <col style="width: 20%">
                     </colgroup>
-                    <tr class="attr">
-                        <th>Sport</th>
-                        <th>Record</th>
-                        <th>Holder</th>
-                        <th>Start Date</th>
-                    </tr>
-                    <?php if (!empty($filteredRecords)): ?>
-                        <?php foreach ($filteredRecords as $record): ?>
-                            <tr class="row">
-                                <td><?php echo htmlspecialchars($record['sport']); ?></td>
-                                <td><?php echo htmlspecialchars($record['record']); ?></td>
-                                <td><?php echo htmlspecialchars($record['holder']); ?></td>
-                                <td><?php echo htmlspecialchars($record['start_date']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr class="row">
-                            <td colspan="4" style="text-align: center;">No records found for the selected sport.</td>
+                    <thead>
+                        <tr class="attr">
+                            <th>Sport</th>
+                            <th>Record</th>
+                            <th>Holder</th>
+                            <th>Date</th>
                         </tr>
-                    <?php endif; ?>
+                    </thead>
+                    <tbody id="table-content"></tbody>
                 </table>
+                <div id="default">Loading...</div>
             </div>
         </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
+            // import jquery //
+        </script>
+        <script src="record.js">
+            // includes query requests, search, and webpage animations //
+        </script>
     </body>
 </html>
