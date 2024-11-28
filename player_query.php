@@ -49,7 +49,9 @@
                 }
             }
             else {
-                $rowString = '<tr class="search-empty"><td colspan="4">No Players Found</td></tr>';
+                $rowString = '<tr class="search-empty">
+                                    <td colspan="4">No Players Found</td>
+                              </tr>';
                 echo $rowString;
             }
             break;
