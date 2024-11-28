@@ -23,7 +23,7 @@
         <div id="content" style="padding-top: 80px; padding-left: 20px; padding-right: 20px">
             <div style="text-align: center; font-size: 18px; padding-bottom: 20px">
                 This page shows the list of all countries ever attended in Olympics.
-                You can rank the list by <span class="tooltip">points<span class="tooltiptext">Golds*3+Silver*2+Bronze*1</span></span>, medal counts, or names.
+                You can rank the list by <span class="tooltip">points<span class="tooltiptext oxygen-light">Golds*3+Silver*2+Bronze*1</span></span>, medal counts, or names.
                 Click on the country to get its profile.
             </div>
             <div id="form">
