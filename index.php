@@ -44,7 +44,8 @@
     </script>
     <script>
         // initialize the database if there's none
-        $.ajax({url: "init.php"});
+        // you can change the reset parameter to 1 to rebuild the database (will take a long time)
+        $.ajax({url: "init.php?reset=0"});
     </script>
 </body>
 </html>

@@ -18,6 +18,12 @@
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
+
+    // dataset full reset
+    $reset = $_REQUEST['reset'];
+    if ($reset == '1') {
+        $conn->query("DROP DATABASE $database");
+    }
     
     $conn->query("CREATE DATABASE IF NOT EXISTS $database");
 
@@ -101,7 +107,7 @@
                             country VARCHAR(255))");
 
     // only import when the table is newly created
-    // (this takes a long time (~15s for my pc))
+    // (this takes a long time (~30s for my pc))
     if (!$table_status) {
         // import csv
         // NOTE: use a "pseudo-relative" path so user don't need to move csv files to some weird location
