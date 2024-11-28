@@ -12,34 +12,44 @@
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-
-    // get query
-    $sql = "";
-    // $result = $conn->query($sql);  // commented for now
     
     $mode = $_REQUEST['m'];
     if ($mode == 'search') {
         $name = $_REQUEST['p'];
-        // temporary sample return table
-        echo '
-                    <tr class="row" data-value="1">
-                        <td>ad</td>
-                        <td>astra</td>
-                        <td>per</td>
-                        <td>aspera</td>
-                    </tr>
-                    <tr class="row" data-value="2">
-                        <td>'.$name.'</td>
-                        <td>Brazil</td>
-                        <td>Those Who Know</td>
-                        <td>Sigma</td>
-                    </tr>
-                    <tr class="row" data-value="3">
-                        <td>Skibidi</td>
-                        <td>Brazil</td>
-                        <td>Those Who Know</td>
-                        <td>Sigma</td>
-                    </tr>';
+        $sql = "SELECT A.name, 
+                A.sex, 
+                A.born, 
+                A.height, 
+                A.weight, 
+                A.country, 
+                A.athlete_id,
+                COUNT(E.athlete_id) AS total_events, -- Total events participated in
+                COUNT(CASE WHEN E.medal = 'Gold' THEN 1 END) AS gold_medals, -- Gold medal count
+                COUNT(CASE WHEN E.medal = 'Silver' THEN 1 END) AS silver_medals, -- Silver medal count
+                COUNT(CASE WHEN E.medal = 'Bronze' THEN 1 END) AS bronze_medals, -- Bronze medal count
+                GROUP_CONCAT(DISTINCT E.event) AS events -- List of distinct events
+                FROM Athlete A
+                LEFT JOIN Details E ON A.athlete_id = E.athlete_id
+                WHERE A.name LIKE '%$name%'
+                GROUP BY A.athlete_id";
+        
+        // check
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $rowString = '<tr class="row"> data-value="'.$row["athlete_id"].'">
+                                    <td>'.$row["name"].'</td>
+                                    <td>'.$row["country"].'</td>
+                                    <td>'.$row["born"].'</td>
+                                    <td>'.$row["sex"].'</td>
+                              </tr>';
+                echo $rowString;
+            }
+        }
+        else {
+            $rowString = '<tr class="search-empty"><td colspan="4">No Players Found</td></tr>';
+            echo $rowString;
+        }
     }
     else if ($mode == 'profile') {
         // also temp
