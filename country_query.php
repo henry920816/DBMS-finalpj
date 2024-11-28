@@ -1,52 +1,34 @@
 <?php
-    // read init.php if you run into any problems
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $database = "db";
+include('database_connection.php');
 
-    // create connection
-    $conn = new mysqli($servername, $username, $password, $database);
+$sort = $_GET['sort'] ?? 'points';  
+$order = $_GET['order'] ?? 'DESC'; 
 
-    // Check connection
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
+
+$query = "SELECT country, country_noc,
+                 SUM(gold) AS gold, SUM(silver) AS silver, SUM(bronze) AS bronze,
+                 SUM(gold * 3 + silver * 2 + bronze) AS points
+          FROM Olympic_Medal_Tally_History
+          GROUP BY country, country_noc";
+
+$query .= " ORDER BY $sort $order"; 
+
+$result = mysqli_query($conn, $query);
+
+if ($result->num_rows > 0) {
+    $rank = 1; 
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<tr class='row' data-value='" . $row['country_noc'] . "'>";
+        echo "<td>" . $rank++ . "</td>"; 
+        echo "<td>" . htmlspecialchars($row['country']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['gold']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['silver']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['bronze']) . "</td>";
+        echo "</tr>";
     }
+} else {
+    echo "<tr><td colspan='5'>No data found.</td></tr>";
+}
 
-    // get query
-    $sql = "";
-    // $result = $conn->query($sql);  // commented for now
-
-    $mode = $_REQUEST["m"];
-    if ($mode == "search") {
-        echo '
-                    <tr class="row">
-                        <td>1</td>
-                        <td>USA</td>
-                        <td>50</td>
-                        <td>80</td>
-                        <td>112</td>
-                    </tr>
-                    <tr class="row">
-                        <td>2</td>
-                        <td>USB</td>
-                        <td>40</td>
-                        <td>30</td>
-                        <td>117</td>
-                    </tr>
-                    <tr class="row">
-                        <td>3</td>
-                        <td>USC</td>
-                        <td>1</td>
-                        <td>32</td>
-                        <td>40</td>
-                    </tr>
-                ';
-    }
-    else if ($mode == "profile") {
-        echo 'Query Load Successfully';
-    }
-    
-    // close connection
-    $conn->close();
+mysqli_close($conn);
 ?>
