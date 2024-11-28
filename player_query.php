@@ -1,79 +1,83 @@
 <?php
-    // read init.php if you run into any problems
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $database = "db";
+include("database_connection.php");
 
-    // create connection
-    $conn = new mysqli($servername, $username, $password, $database);
-
-    // Check connection
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
+if ($_GET['m'] == 'list') {
+    $query = "SELECT athlete_id, name, country, born, sex FROM olympic_athlete_biography ORDER BY country, name";
+    $result = $conn->query($query);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr class='row' data-value='{$row['athlete_id']}'>
+                    <td>{$row['name']}</td>
+                    <td>{$row['country']}</td>
+                    <td>{$row['born']}</td>
+                    <td>{$row['sex']}</td>
+                  </tr>";
+        }
     }
-    
-    $mode = $_REQUEST['m'];
-    switch ($mode) {
-        // Search Player
-        case 'search':
-            $name = $_REQUEST['p'];
-            $sql = "SELECT A.name, 
-                    A.sex, 
-                    A.born, 
-                    A.height, 
-                    A.weight, 
-                    A.country, 
-                    A.athlete_id,
-                    COUNT(E.athlete_id) AS total_events, -- Total events participated in
-                    COUNT(CASE WHEN E.medal = 'Gold' THEN 1 END) AS gold_medals, -- Gold medal count
-                    COUNT(CASE WHEN E.medal = 'Silver' THEN 1 END) AS silver_medals, -- Silver medal count
-                    COUNT(CASE WHEN E.medal = 'Bronze' THEN 1 END) AS bronze_medals, -- Bronze medal count
-                    GROUP_CONCAT(DISTINCT E.event) AS events -- List of distinct events
-                    FROM Athlete A
-                    LEFT JOIN Details E ON A.athlete_id = E.athlete_id
-                    WHERE A.name LIKE '%$name%'
-                    GROUP BY A.athlete_id";
-            
-            // check
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $rowString = '<tr class="row"> data-value="'.$row["athlete_id"].'">
-                                        <td>'.$row["name"].'</td>
-                                        <td>'.$row["country"].'</td>
-                                        <td>'.$row["born"].'</td>
-                                        <td>'.$row["sex"].'</td>
-                                  </tr>';
-                    echo $rowString;
-                }
-            }
-            else {
-                $rowString = '<tr class="search-empty">
-                                    <td colspan="4">No Players Found</td>
-                              </tr>';
-                echo $rowString;
-            }
-            break;
-        
-        // Display Profile
-        case 'profile':
-            // also temp
-            echo '
-                    <p><strong>姓名：</strong>Name</p>
-                    <p><strong>性別：</strong>Sex</p>
-                    <p><strong>出生日期：</strong>B.Year</p>
-                    <p><strong>身高：</strong>Height cm</p>
-                    <p><strong>體重：</strong>Weight kg</p>
-                    <p><strong>國家：</strong>Country</p>
-                    <p><strong>備註：</strong>Notes</p>';
-            break;
-        
-        // Edit Record
-        case 'edit':
-            break;
+}
+
+if ($_GET['m'] == 'search') {
+    $name = trim($_GET['p']); 
+    $name = strtolower($name);
+
+    $query = "SELECT athlete_id, name, country, born, sex 
+              FROM olympic_athlete_biography 
+              WHERE LOWER(name) = '$name' 
+              ORDER BY country, name";
+    $result = $conn->query($query);
+
+    if ($result->num_rows == 0) {
+        $query = "SELECT athlete_id, name, country, born, sex 
+                  FROM olympic_athlete_biography 
+                  WHERE LOWER(name) LIKE '%$name%' 
+                  ORDER BY country, name";
+        $result = $conn->query($query);
     }
 
-    // close connection
-    $conn->close();
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr class='row' data-value='{$row['athlete_id']}'>
+                    <td>{$row['name']}</td>
+                    <td>{$row['country']}</td>
+                    <td>{$row['born']}</td>
+                    <td>{$row['sex']}</td>
+                  </tr>";
+        }
+    } else {
+        echo "<p>找不到符合條件的運動員。</p>";
+    }
+}
+
+if ($_GET['m'] == 'profile') {
+    $playerId = $_GET['p'];
+    $query = "SELECT A.name, A.sex, A.born, A.height, A.weight, A.country,
+              COUNT(CASE WHEN E.medal = 'Gold' THEN 1 END) AS gold_medals,
+              COUNT(CASE WHEN E.medal = 'Silver' THEN 1 END) AS silver_medals,
+              COUNT(CASE WHEN E.medal = 'Bronze' THEN 1 END) AS bronze_medals,
+              GROUP_CONCAT(DISTINCT E.event) AS events
+              FROM olympic_athlete_biography A
+              LEFT JOIN olympic_athlete_event_details E ON A.athlete_id = E.athlete_id
+              WHERE A.athlete_id = '$playerId'
+              GROUP BY A.athlete_id";
+
+    $result = $conn->query($query);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<div class='profile-header'>{$row['name']}</div>";
+            echo "<div class='profile-content'>";
+            echo "<p class='profile-detail'><strong>性別:</strong> {$row['sex']}</p>";
+            echo "<p class='profile-detail'><strong>出生日期:</strong> {$row['born']}</p>";
+            echo "<p class='profile-detail'><strong>身高:</strong> {$row['height']} cm</p>";
+            echo "<p class='profile-detail'><strong>體重:</strong> {$row['weight']} kg</p>";
+            echo "<p class='profile-detail'><strong>國家:</strong> {$row['country']}</p>";
+            echo "<p class='profile-detail'><strong>金牌數:</strong> {$row['gold_medals']}</p>";
+            echo "<p class='profile-detail'><strong>銀牌數:</strong> {$row['silver_medals']}</p>";
+            echo "<p class='profile-detail'><strong>銅牌數:</strong> {$row['bronze_medals']}</p>";
+            echo "<p class='profile-detail event-list'><strong>參加的項目:</strong> {$row['events']}</p>";
+            echo "</div>";
+        }
+    } else {
+        echo "<p>沒有找到該運動員的資料。</p>";
+    }
+}
 ?>

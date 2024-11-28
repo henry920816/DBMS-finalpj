@@ -71,11 +71,7 @@
                 </div>
             </div>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
-            // import jquery //
-        </script>
-        <script src="player.js">
-            // includes query requests, search, and webpage animations //
-        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="player.js"></script>
     </body>
 </html>
