@@ -9,15 +9,24 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <!-- Import Fonts -->
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Alatsi&family=Oxygen:wght@300;400;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Alatsi&family=Oxygen:wght@300;400;700&family=Sono:wght@600&display=swap');
         </style>
     </head>
 
     <body>
         <!-- NavBar -->
         <div id="navBarContainer">
-            <a class="menuBtn" href="index.php"><i class="material-icons home">home</i></a>
+            <a class="menuBtn" href="index.php"><i class="material-icons home prevent-select">home</i></a>
             <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS or smth idk</b></p>
+            <span class="edit-switch">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider prevent-select sono">
+                        1 0
+                    </span>
+                </label>
+                Edit Mode
+            </span>
         </div>
         <!-- Filter Section -->
         <div id="content" style="padding-top: 80px; padding-left: 20px; padding-right: 20px">
