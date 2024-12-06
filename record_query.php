@@ -1,10 +1,14 @@
 <?php
-include "database_connection.php";
+include('database_connection.php');
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
 $method = $_GET['m'] ?? '';
 
 if ($method === 'get_events') {
-    $query = "SELECT DISTINCT 項目 AS event FROM record ORDER BY event ASC";
+    $query = "SELECT DISTINCT sport AS event FROM AthleteRecords ORDER BY event ASC";
     $result = mysqli_query($conn, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -16,7 +20,7 @@ if ($method === 'get_events') {
         echo '<option value="">No events available</option>';
     }
 } elseif ($method === 'all') {
-    $query = "SELECT 項目 AS event, athlete_id, country, name, grade, date FROM record";
+    $query = "SELECT sport AS event, athlete_id, country, name, grade, year FROM AthleteRecords";
     $result = mysqli_query($conn, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -27,7 +31,7 @@ if ($method === 'get_events') {
                     <td>' . htmlspecialchars($row['country']) . '</td>
                     <td>' . htmlspecialchars($row['name']) . '</td>
                     <td>' . htmlspecialchars($row['grade']) . '</td>
-                    <td>' . htmlspecialchars($row['date']) . '</td>
+                    <td>' . htmlspecialchars($row['year']) . '</td>
                   </tr>';
         }
     } else {
@@ -36,7 +40,7 @@ if ($method === 'get_events') {
 } elseif ($method === 'search') {
     $event = $_GET['event'] ?? '';
     if (!empty($event)) {
-        $query = "SELECT 項目 AS event, athlete_id, country, name, grade, date FROM record WHERE 項目 = ?";
+        $query = "SELECT sport AS event, athlete_id, country, name, grade, year FROM AthleteRecords WHERE sport = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("s", $event);
 
@@ -50,7 +54,7 @@ if ($method === 'get_events') {
                             <td>' . htmlspecialchars($row['country']) . '</td>
                             <td>' . htmlspecialchars($row['name']) . '</td>
                             <td>' . htmlspecialchars($row['grade']) . '</td>
-                            <td>' . htmlspecialchars($row['date']) . '</td>
+                            <td>' . htmlspecialchars($row['year']) . '</td>
                           </tr>';
                 }
             } else {
