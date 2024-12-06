@@ -512,4 +512,6 @@ input:checked + .slider:before {
 
 #edit-new-event-btn {
     padding: 5px;
+    border: 2px solid black;
+    border-radius: 4px;
 }
