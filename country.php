@@ -15,7 +15,7 @@
 <body>
     <div id="navBarContainer">
         <a class="menuBtn" href="index.php"><i class="material-icons home">home</i></a>
-        <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS or smth idk</b></p>
+        <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS</b></p>
     </div>
 
     <div id="content" style="padding-top: 80px; padding-left: 20px; padding-right: 20px;">
@@ -28,12 +28,12 @@
         <div id="form">
             <form name="form">
                 <label class="oxygen-bold">Sort By</label>
-                <select id="country-sort-option">
+                <select id="country-sort-option" class="left">
                     <option value="points">Points</option>
                     <option value="gold">Gold</option>
                     <option value="silver">Silver</option>
                     <option value="bronze">Bronze</option>
-                    <option value="name">Name</option>
+                    <option value="country">Name</option>
                 </select>
                 <select id="country-sort-order">
                     <option value="DESC">Descend</option>
@@ -71,7 +71,7 @@
     
     <div id="profile">
         <div id="profile-content">
-            <div id="test"></div>
+            <div id="profile-req"></div>
         </div>
     </div>
 

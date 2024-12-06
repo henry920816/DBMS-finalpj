@@ -1,23 +1,5 @@
 <?php
-    ##############################################
-    ##  IMPORTANT INFO FOR DATABASE CONNECTION  ##
-    ##############################################
-    // here the password is empty (you may want to change it, or just set yours to empty as well)
-    //     -> run "SET PASSWORD FOR root@localhost='';" in sql and restart the server
-    // you -should not- need to change the servername and username, as they're the default names for a local server
-    // the name for database is whatever tbh
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $database = "db";
-
-    // create connection
-    $conn = new mysqli($servername, $username, $password);
-
-    // check connection
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
+    include "database_connection.php";
 
     // dataset full reset
     $reset = $_REQUEST['reset'];
@@ -29,7 +11,7 @@
 
     // link to database
     $conn->select_db($database);
-
+    
     // create tables
     // NOTE: mysqli does not support (from what I know of) multi-query
     //       so, create table one by one
@@ -101,10 +83,19 @@
                             result_format TEXT,
                             result_detail TEXT,
                             result_description TEXT,
-                            FOREIGN KEY (edition_id) REFERENCES Games(edition_id));");
+                            FOREIGN KEY (edition_id) REFERENCES Games(edition_id))");
     $conn->query("CREATE TABLE IF NOT EXISTS Country (
                             noc CHAR(3) PRIMARY KEY,
                             country VARCHAR(255))");
+    $conn->query("CREATE TABLE AthleteRecords (
+                            sport VARCHAR(255),
+                            athlete_id INT,
+                            country VARCHAR(50),
+                            name VARCHAR(255),
+                            grade VARCHAR(20), -- Used VARCHAR for mixed formats (e.g., times, distances)
+                            year YEAR,
+                            ascend TINYINT, -- Indicates whether the record is ascending (0 or 1)
+                            FOREIGN KEY (athlete_id) REFERENCES Athlete(athlete_id))");
 
     // only import when the table is newly created
     // (this takes a long time (~30s for my pc))
@@ -118,32 +109,37 @@
         $conn->query("SET GLOBAL local_infile=1");
         $conn->query("load data local infile '$dir/Olympic_Country_Profiles.csv'
                              INTO TABLE Country
-                             FIELDS TERMINATED BY ',' ENCLOSED BY '\"'
+                             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
                              LINES TERMINATED BY '\n'
                              IGNORE 1 ROWS");
         $conn->query("load data local infile '$dir/Olympic_Medal_Tally_History.csv'
                              INTO TABLE Medal
-                             FIELDS TERMINATED BY ',' ENCLOSED BY '\"'
+                             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
                              LINES TERMINATED BY '\n'
                              IGNORE 1 ROWS");
         $conn->query("load data local infile '$dir/Olympic_Athlete_Biography.csv'
                              INTO TABLE Athlete
-                             FIELDS TERMINATED BY ',' ENCLOSED BY '\"'
-                             LINES TERMINATED BY '\n'
-                             IGNORE 1 ROWS");
-        $conn->query("load data local infile '$dir/Olympic_Athlete_Event_Details.csv'
-                             INTO TABLE Details
-                             FIELDS TERMINATED BY ',' ENCLOSED BY '\"'
+                             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
                              LINES TERMINATED BY '\n'
                              IGNORE 1 ROWS");
         $conn->query("load data local infile '$dir/Olympic_Games_Summary.csv'
                              INTO TABLE Games
-                             FIELDS TERMINATED BY ',' ENCLOSED BY '\"'
+                             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
                              LINES TERMINATED BY '\n'
                              IGNORE 1 ROWS");
         $conn->query("load data local infile '$dir/Olympic_Event_Results.csv'
                              INTO TABLE Results
-                             FIELDS TERMINATED BY ',' ENCLOSED BY '\"'
+                             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
+                             LINES TERMINATED BY '\n'
+                             IGNORE 1 ROWS");
+        $conn->query("load data local infile '$dir/Olympic_Athlete_Event_Details.csv'
+                             INTO TABLE Details
+                             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
+                             LINES TERMINATED BY '\n'
+                             IGNORE 1 ROWS");
+        $conn->query("load data local infile '$dir/Olympic_Record.csv'
+                             INTO TABLE AthleteRecords
+                             FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
                              LINES TERMINATED BY '\n'
                              IGNORE 1 ROWS");
     }

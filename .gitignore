@@ -15,3 +15,4 @@ node_modules/@types/jquery/JQuery.d.ts
 node_modules/@types/jquery/index.d.ts
 node_modules/@types/jquery/dist/jquery.slim.d.ts
 node_modules/.package-lock.json
+database_connection.php

@@ -33,7 +33,7 @@ $("#table").on("click", ".row", function(event) {
     profileContent.style.marginBottom = "50px";
     profileContent.style.opacity = "100%";
 
-    $("#test").load("country_query.php?m=profile&c=" + country);
+    $("#profile-req").load("country_query.php?m=profile&c=" + country);
 });
 
 window.onclick = function(event) {
@@ -44,6 +44,6 @@ window.onclick = function(event) {
         profileContent.style.marginTop = "130px";
         profileContent.style.marginBottom = "20px";
         profileContent.style.opacity = "0";
-        document.getElementById("test").innerHTML = "";
+        document.getElementById("profile-req").innerHTML = "";
     }
 };

@@ -7,6 +7,8 @@
         <link href="style.css" rel="stylesheet" type="text/css">
         <!-- Import Icons -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" as="style">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
         <!-- Import Fonts -->
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Alatsi&family=Oxygen:wght@300;400;700&family=Sono:wght@600&display=swap');
@@ -17,10 +19,10 @@
         <!-- NavBar -->
         <div id="navBarContainer">
             <a class="menuBtn" href="index.php"><i class="material-icons home prevent-select">home</i></a>
-            <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS or smth idk</b></p>
+            <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS</b></p>
             <span class="edit-switch">
                 <label class="switch">
-                    <input type="checkbox">
+                    <input type="checkbox" id="edit-enable">
                     <span class="slider prevent-select sono">
                         1 0
                     </span>
@@ -38,7 +40,7 @@
             <div id="form">
                 <form name="form">
                     <label for="name" class="oxygen-bold">Enter Name</label>
-                    <input type="text" id="name" class="oxygen-light" value="" placeholder="eg: Tai Tzu-ying">
+                    <input type="text" id="name" class="left" value="" placeholder="eg: Tai Tzu-ying">
                     <input type="submit" value="Search" id="submit" class="oxygen-bold">
                 </form>
             </div>
@@ -64,14 +66,27 @@
             </div>
             <div id="profile">
                 <div id="profile-content">
-                    <div id="inner">
-                        <h2 style="letter-spacing: 1.5px;">Profile</h2>
-                        <div id="test"></div>
-                    </div>
+                    <h2 style="letter-spacing: 1.5px">Profile</h2>
+                    <div id="profile-req"></div>
                 </div>
             </div>
+            <div id="edit-ui">
+                <div id="edit-ui-content">
+                    <h2 style="letter-spacing: 1.5px">Edit Profile</h2>
+                    <span id="edit-req" style="line-height: 40px"></span>
+                    <span id="modal-button">
+                        <button id="confirm">Confirm</button>
+                        <button id="cancel">Cancel</button>
+                    </span>
+                </div>
+            </div>
+            
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script src="player.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
+            // import jQuery //
+        </script>
+        <script src="player.js">
+            // includes query requests, search, and webpage animations //
+        </script>
     </body>
 </html>

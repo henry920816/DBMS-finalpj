@@ -16,7 +16,7 @@
     <!-- NavBar -->
     <div id="navBarContainer">
         <a class="menuBtn" href="index.php" style="width: 0; padding-left: 0; padding-right: 0; overflow: hidden"><i class="material-icons home">h</i></a>
-        <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS or smth idk</b></p>
+        <p class="center"><img src="olympics.png" style="width:60px; height:auto; padding-right: 10px"><b>OLYMPICS</b></p>
     </div>
 
     <!-- Main Content -->
@@ -45,8 +45,7 @@
     <script>
         // initialize the database if there's none
         // you can change the reset parameter to 1 to rebuild the database (will take a long time)
-        // DO NOT USE THIS FOR NOW, LOADING ISN'T WORKING PROPERLY
-        //$.ajax({url: "init.php?reset=0"});
+        $.ajax({url: "init.php?reset=1"});
     </script>
 </body>
 </html>

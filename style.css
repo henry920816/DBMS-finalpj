@@ -1,6 +1,7 @@
 body {
     font-family: "Alatsi", sans-serif;
     margin: 0;
+    overflow-x: hidden;
 }
 
 .oxygen-light {
@@ -50,6 +51,7 @@ body {
 
 .home {
     font-size: 30px;
+    border: none;
 }
 
 .center {
@@ -67,7 +69,6 @@ body {
   
 button {
     padding: 0;
-    border: none;
     background: none;
 }
 
@@ -75,10 +76,13 @@ button {
     margin: 15px 80px;
 }
 
+#table table {
+  width: 100%;
+}
+
 table {
   border-collapse: collapse;
   table-layout: fixed;
-  width: 100%;
 }
 
 th {
@@ -87,18 +91,18 @@ th {
     padding: 12px 8px 12px 30px;
 }
 
-td {
+#table td {
     border-bottom: 1px solid #ddd;
     text-align: left;
     padding: 8px 8px 8px 30px;
     cursor: pointer;
 }
 
-tr:not(.attr):hover {
+#table tr:not(.attr):hover {
     background-color: rgb(255, 244, 229);
 }
 
-tr.search-empty td {
+#table tr.search-empty td {
     color: rgb(155, 155, 155);
     border-bottom: 0; 
     text-align: center;
@@ -107,11 +111,11 @@ tr.search-empty td {
     height: 60px;
 }
 
-tr.search-empty:hover {
+#table tr.search-empty:hover {
     background-color: rgb(255, 255, 255) !important;
 }
 
-#profile {
+#profile, #edit-ui {
     overflow: hidden;
     opacity: 0;
     position: fixed;
@@ -124,7 +128,7 @@ tr.search-empty:hover {
     transition: opacity 0.2s;
 }
 
-#profile-content {
+#profile-content, #edit-ui-content {
     overflow: hidden;
     opacity: 0;
     background-color: white;
@@ -138,11 +142,6 @@ tr.search-empty:hover {
     width: 80%;
     height: 520px;
     transition: margin-top 0.5s cubic-bezier(0.16, 1, 0.3, 1), margin-bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
-}
-
-#inner {
-    overflow-y: scroll;
-    height: 520px;
 }
 
 .row.select {
@@ -165,15 +164,29 @@ form label {
     padding: 0 10px;
 }
 
-#name {
+input[type=text] {
     width: 50%;
-    height: 25px;
+    height: 27px;
     padding: 12px;
+    padding-bottom: 10px;
     box-sizing: border-box;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
     border: 2px solid rgb(110, 110, 110);
     outline: none;
+    font-weight: 300;
+}
+
+input[type=text].left {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+input[type=text].right {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+input[type=text].single {
+    border-radius: 5px;
 }
 
 #submit {
@@ -198,11 +211,23 @@ form label {
 
 select {
     height: 27px;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
     padding: 0 8px;
     padding-top: 2px;
     border: 2px solid rgb(110, 110, 110);
+}
+
+select.left {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+select.right {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+select.single {
+    border-radius: 5px;
 }
 
 /* remove autofill background color */
@@ -328,8 +353,163 @@ input:checked + .slider:before {
     transform: translateX(18px);
 }
 
-.prevent-select {
+.prevent-select, .material-symbols-outlined, .medal {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
+}
+
+.edit {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    right: -1045px;
+    top: -24px;
+
+    border: 3px solid black;
+    border-radius: 50%;
+
+    cursor: pointer;
+}
+
+.edit span {
+    text-align: center;
+    font-size: 18px;
+    color: black;
+}
+
+.delete {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    right: -1075px;
+    top: -24px;
+
+    border: 3px solid red;
+    border-radius: 50%;
+
+    cursor: pointer;
+}
+
+.delete span {
+    position: relative;
+    top: 0.5px;
+
+    text-align: center;
+    font-size: 18px;
+    color: red;
+}
+
+.edit, .delete {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.edit:hover {
+    background-color: #d4d4d4;
+}
+
+.delete:hover {
+    background-color: rgb(255, 206, 206);
+}
+
+#edit-name {
+    width: 200px
+}
+
+#edit-byear, #edit-height, #edit-weight {
+    width: 60px;
+}
+
+.medal {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: 700;
+    margin-left: 10px;
+    line-height: normal;
+}
+
+.medal.gold {
+    background-color: #FFE142;
+}
+
+.medal.silver {
+    background-color: #C0C0C0;
+}
+
+.medal.bronze {
+    background-color: #D18B41;
+}
+
+#profile-event {
+    line-height: 30px;
+}
+
+.modal-right {
+    line-height: 30px;
+    padding-left: 40px;
+    border-left: 2px solid rgb(155, 155, 155);
+}
+
+#edit-ui-content {
+    position: relative;
+}
+
+#modal-button {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+}
+
+#confirm {
+    background-color: rgb(130, 225, 211);
+    padding: 5px 10px;
+    border: 3px solid rgb(64, 106, 106);
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    margin-right: 3px;
+    
+    font-family: "Oxygen", sans-serif;
+    font-weight: 700;
+
+    transition: background-color 0.1s;
+}
+
+#confirm:hover {
+    background-color: rgb(108, 195, 182);
+}
+
+#cancel {
+    background-color: rgb(203, 203, 203);
+    padding: 5px 10px;
+    border: 3px solid rgb(91, 91, 91);
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    
+    font-family: "Oxygen", sans-serif;
+    font-weight: 700;
+
+    transition: background-color 0.1s;
+}
+
+#cancel:hover {
+    background-color: rgb(167, 167, 167);
+}
+
+#edit-events-container {
+    overflow-y: scroll;
+    height: 300px;
+}
+
+#profile-events-container {
+    overflow-y: scroll;
+    height: 380px;
+}
+
+#edit-new-event-btn {
+    padding: 5px;
 }
