@@ -39,16 +39,16 @@ if ($method === 'getYears') {
                 R.event_title AS event,
                 GROUP_CONCAT(DISTINCT CASE 
                     WHEN D.medal = 'Gold' THEN 
-                        CASE WHEN D.isTeamSport = 'true' THEN D.country_noc ELSE A.name END 
-                END ORDER BY CASE WHEN D.isTeamSport = 'true' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS gold,
+                        CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
+                END ORDER BY CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS gold,
                 GROUP_CONCAT(DISTINCT CASE 
                     WHEN D.medal = 'Silver' THEN 
-                        CASE WHEN D.isTeamSport = 'true' THEN D.country_noc ELSE A.name END 
-                END ORDER BY CASE WHEN D.isTeamSport = 'true' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS silver,
+                        CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
+                END ORDER BY CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS silver,
                 GROUP_CONCAT(DISTINCT CASE 
                     WHEN D.medal = 'Bronze' THEN 
-                        CASE WHEN D.isTeamSport = 'true' THEN D.country_noc ELSE A.name END 
-                END ORDER BY CASE WHEN D.isTeamSport = 'true' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS bronze
+                        CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
+                END ORDER BY CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS bronze
             FROM 
                 Details D
             INNER JOIN 
@@ -80,11 +80,12 @@ if ($method === 'getYears') {
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 echo '<tr>
-                        <td>' . htmlspecialchars($row['sport']) . '</td>
-                        <td>' . htmlspecialchars($row['event']) . '</td>
-                        <td>' . htmlspecialchars($row['gold']) . '</td>
-                        <td>' . htmlspecialchars($row['silver']) . '</td>
-                        <td>' . htmlspecialchars($row['bronze']) . '</td>
+                        <td>' . $row['edition'] . '</td>
+                        <td>' . $row['sport'] . '</td>
+                        <td>' . $row['event'] . '</td>
+                        <td>' . $row['gold'] . '</td>
+                        <td>' . $row['silver'] . '</td>
+                        <td>' . $row['bronze'] . '</td>
                       </tr>';
             }
         } else {

@@ -16,6 +16,3 @@ where d.edition like '2020%' and d.sport = 'Artistic Gymnastics'
 and d.medal in ('Gold', 'Silver', 'Bronze')
 group by d.sport, d.event
 order by d.sport, d.event;
-
-select d.
-

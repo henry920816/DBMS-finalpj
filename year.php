@@ -25,7 +25,7 @@
                 <div>
                     <label class="oxygen-bold">Select Type</label>
                     <select id="type-option">
-                        <option value="">All Olympics</option>
+                        <option value="All">All Olympics</option>
                         <option value="Summer">Summer Olympics</option>
                         <option value="Winter">Winter Olympics</option>
                     </select>
@@ -59,7 +59,7 @@
                         <th>Event</th>
                         <th style="background-color: #FFE142">Gold</th>
                         <th style="background-color: #C0C0C0">Silver</th>
-                        <th style="background-color: #D1B841">Bronze</th>
+                        <th style="background-color: #D18B41">Bronze</th>
                     </tr>
                 </thead>
                 <tbody id="table-content">
