@@ -128,7 +128,7 @@
             }
             break;
         
-        // Edit Record
+        // Display Edit
         case 'edit-ui':
             $playerId = $_REQUEST["p"];
             $sql = "SELECT A.name, A.sex, A.born, A.height, A.weight, A.country,
@@ -212,7 +212,20 @@
                 }
             }
             break;
-        
+        // Edit Record
+        case "edit":
+            $sql = "update Athlete
+                    set name = '".$_POST["name"]."',
+                        sex = '".$_POST["sex"]."',
+                        born = '".$_POST["birthday"]."',
+                        height = '".$_POST["height"]."',
+                        weight = '".$_POST["weight"]."',
+                        country = '".$_POST["country"]."'
+                    where athlete_id = '".$_POST["id"]."'";
+            $result = $conn->query($sql);
+            echo $result;
+            break;
+
         // Delete Record
         case 'delete':
             break;
@@ -234,6 +247,10 @@
             return "(not provided)";
         }
         else if (!is_numeric($arr[0])) {
+            $arr = explode("-", $arr[0]);
+            if (is_numeric($arr[0])) {
+                return $date;
+            }
             return "(not provided)";
         }
         // only year

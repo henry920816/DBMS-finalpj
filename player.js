@@ -71,6 +71,17 @@ $("body").on("click", "#edit-ui", function(event) {
     }
 })
 
+$("#cancel").on("click", function() {
+    enterEdit = false;
+    // unmark as selected
+    $(".select").removeClass("select");
+    // close animation
+    $("#edit-ui").css("height", "0").css("opacity", "0");
+    $("#edit-ui-content").css("marginTop", "130px").css("marginBottom", "20px").css("opacity", "0");
+    // clear content
+    $("#edit-req").html("");
+})
+
 $(".slider").on("click", function() {
     if (!$("#edit-enable").prop("checked")) {
         $(".edit").css("right", "-45px").css("opacity", "100%");
@@ -114,6 +125,49 @@ $("#edit-ui-content").on("mousedown", function() {
     maintainInput("#edit-height");
     maintainInput("#edit-weight");
 })
+
+// send update request to database
+$("#confirm").on("click", function() {
+    var byear = $("#edit-byear").val();
+    var bmonth = $("#edit-bmonth").val();
+    var bday = $("#edit-bday").val();
+    $.ajax(
+        {
+            url: "player_query.php?m=edit",
+            type: "POST",
+            data: {
+                "id": $(".select").attr("data-value"),
+                "name": $("#edit-name").val(),
+                "sex": $("#edit-sex").val(),
+                "birthday": byear + "-" + bmonth + "-" + bday,
+                "height": $("#edit-height").val(),
+                "weight": $("#edit-weight").val(),
+                "country": $("#edit-country").val()
+            },
+            success: function(data) {
+
+                enterEdit = false;
+                // unmark as selected
+                $(".select").removeClass("select");
+                // close animation
+                $("#edit-ui").css("height", "0").css("opacity", "0");
+                $("#edit-ui-content").css("marginTop", "130px").css("marginBottom", "20px").css("opacity", "0");
+                // clear content
+                $("#edit-req").html("");
+
+                if (data == "1") {
+                    alert("update successfully!");
+                }
+                else {
+                    alert("update failed.");
+                }
+            }
+        }
+    )
+})
+
+
+// FUNCTION //
 
 function daysInMonth(month, year) {
     var y = Number(year);
