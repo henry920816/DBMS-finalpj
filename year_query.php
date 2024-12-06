@@ -1,9 +1,5 @@
 <?php
-include('database_connection.php');
-
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+include "database_connection.php";
 
 $method = $_GET['m'] ?? '';
 
