@@ -1,13 +1,17 @@
 <?php
-include "database_connection.php";
+include('database_connection.php');
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
 $method = $_GET['m'] ?? '';
 
 if ($method === 'getYears') {
     $type = $_GET['type'] ?? '';
-    if ($type === 'Summer Olympics') {
+    if ($type === 'Summer') {
         $query = "SELECT DISTINCT year FROM Games WHERE edition LIKE '%Summer%' ORDER BY year ASC";
-    } elseif ($type === 'Winter Olympics') {
+    } elseif ($type === 'Winter') {
         $query = "SELECT DISTINCT year FROM Games WHERE edition LIKE '%Winter%' ORDER BY year ASC";
     } else {
         $query = "SELECT DISTINCT year FROM Games ORDER BY year ASC";
@@ -31,7 +35,6 @@ if ($method === 'getYears') {
     if ($year) {
         $query = "
             SELECT 
-                G.edition AS edition,
                 R.sport AS sport,
                 R.event_title AS event,
                 GROUP_CONCAT(DISTINCT CASE 
@@ -77,7 +80,6 @@ if ($method === 'getYears') {
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 echo '<tr>
-                        <td>' . htmlspecialchars($row['edition']) . '</td>
                         <td>' . htmlspecialchars($row['sport']) . '</td>
                         <td>' . htmlspecialchars($row['event']) . '</td>
                         <td>' . htmlspecialchars($row['gold']) . '</td>
