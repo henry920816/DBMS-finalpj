@@ -16,7 +16,6 @@ if ($method === 'getYears') {
     } else {
         $query = "SELECT DISTINCT year FROM Games ORDER BY year ASC";
     }
-
     $result = $conn->query($query);
 
     if ($result->num_rows > 0) {
@@ -28,71 +27,82 @@ if ($method === 'getYears') {
     } else {
         echo json_encode([]);
     }
-} elseif ($method === 'getResults') {
-    $year = $_GET['y'] ?? '';
-    $type = $_GET['type'] ?? '';
-
+} elseif ($method === 'getSports') {
+    $year = $_GET['year'] ?? '';
     if ($year) {
-        $query = "
-            SELECT 
-                R.sport AS sport,
-                R.event_title AS event,
-                GROUP_CONCAT(DISTINCT CASE 
-                    WHEN D.medal = 'Gold' THEN 
-                        CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
-                END ORDER BY CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS gold,
-                GROUP_CONCAT(DISTINCT CASE 
-                    WHEN D.medal = 'Silver' THEN 
-                        CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
-                END ORDER BY CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS silver,
-                GROUP_CONCAT(DISTINCT CASE 
-                    WHEN D.medal = 'Bronze' THEN 
-                        CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
-                END ORDER BY CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END ASC SEPARATOR ', ') AS bronze
-            FROM 
-                Details D
-            INNER JOIN 
-                Games G ON D.edition_id = G.edition_id
-            INNER JOIN 
-                Results R ON D.result_id = R.result_id
-            LEFT JOIN 
-                Athlete A ON D.athlete_id = A.athlete_id
-            WHERE 
-                G.year = ?
-        ";
-
-        if ($type === 'Summer Olympics') {
-            $query .= " AND G.edition LIKE '%Summer%'";
-        } elseif ($type === 'Winter Olympics') {
-            $query .= " AND G.edition LIKE '%Winter%'";
-        }
-
-        $query .= "
-            GROUP BY G.edition, R.sport, R.event_title
-            ORDER BY G.edition ASC, R.sport ASC, R.event_title ASC
-        ";
-
+        $query = "SELECT DISTINCT sport FROM Details D INNER JOIN Games G ON D.edition_id = G.edition_id WHERE G.year = ? ORDER BY sport ASC";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $year);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
+            $sports = [];
+            while ($row = $result->fetch_assoc()) {
+                $sports[] = $row['sport'];
+            }
+            echo json_encode($sports);
+        } else {
+            echo json_encode([]);
+        }
+    } else {
+        echo json_encode([]);
+    }
+} elseif ($method === 'getResults') {
+    $type = $_GET['type'] ?? '';
+    $year = $_GET['year'] ?? '';
+    $sport = $_GET['sport'] ?? '';
+
+    if ($year && $sport) {
+        $query = "
+            SELECT 
+                D.event AS event,
+                GROUP_CONCAT(DISTINCT CASE 
+                                 WHEN D.medal = 'Gold' THEN 
+                                     CASE WHEN D.isTeamSport = 'True' THEN D.country_noc ELSE A.name END 
+                                 ELSE NULL END SEPARATOR ', ') AS gold,
+                GROUP_CONCAT(DISTINCT CASE 
+                                 WHEN D.medal = 'Silver' THEN 
+                                     CASE WHEN D.isTeamSport = 'True' THEN D.country_noc ELSE A.name END 
+                                 ELSE NULL END SEPARATOR ', ') AS silver,
+                GROUP_CONCAT(DISTINCT CASE 
+                                 WHEN D.medal = 'Bronze' THEN 
+                                     CASE WHEN D.isTeamSport = 'True' THEN D.country_noc ELSE A.name END 
+                                 ELSE NULL END SEPARATOR ', ') AS bronze
+            FROM 
+                Details D
+            INNER JOIN 
+                Games G ON D.edition_id = G.edition_id
+            LEFT JOIN 
+                Athlete A ON D.athlete_id = A.athlete_id
+            WHERE 
+                G.year = ? AND D.sport = ? AND G.edition LIKE ?
+            GROUP BY 
+                D.event
+            ORDER BY 
+                D.event ASC;
+        ";
+
+        $season = ($type === 'Summer') ? '%Summer%' : (($type === 'Winter') ? '%Winter%' : '%');
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("iss", $year, $sport, $season);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 echo '<tr>
-                        <td>' . $row['edition'] . '</td>
-                        <td>' . $row['sport'] . '</td>
-                        <td>' . $row['event'] . '</td>
-                        <td>' . $row['gold'] . '</td>
-                        <td>' . $row['silver'] . '</td>
-                        <td>' . $row['bronze'] . '</td>
+                        <td>' . htmlspecialchars($row['event']) . '</td>
+                        <td>' . htmlspecialchars($row['gold']) . '</td>
+                        <td>' . htmlspecialchars($row['silver']) . '</td>
+                        <td>' . htmlspecialchars($row['bronze']) . '</td>
                       </tr>';
             }
         } else {
-            echo '<tr><td colspan="6">No results found for this year.</td></tr>';
+            echo '<tr><td colspan="4">No results found for the selected filters.</td></tr>';
         }
     } else {
-        echo '<tr><td colspan="6">Invalid year selected.</td></tr>';
+        echo '<tr><td colspan="4">Invalid year or sport selected.</td></tr>';
     }
 }
 
