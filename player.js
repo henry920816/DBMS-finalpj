@@ -124,6 +124,7 @@ $("#edit-ui-content").on("mousedown", function() {
     maintainInput("#edit-byear");
     maintainInput("#edit-height");
     maintainInput("#edit-weight");
+    maintainInput(".edit-event-year-textbox");
 })
 
 // send update request to database
@@ -166,6 +167,113 @@ $("#confirm").on("click", function() {
     )
 })
 
+$("#edit-ui-content").on("click", "#edit-new-event-btn", function() {
+    // backslash used for format purpose
+    var rowString = "\
+    <tr>\
+        <td>\
+            <button class='remove-new-event'>\
+                <span class='material-symbols-outlined'>\
+                    close\
+                </span>\
+            </button>\
+        </td>\
+        <td>\
+            <select class='edit-new-event-season left' style='width: 95px'>\
+                <option class='empty'>(Season)</option>\
+                <option value='summer'>Summer</option>\
+                <option value='winter'>Winter</option>\
+            </select>\
+            <span class='edit-event-container'>\
+                <select class='edit-new-event-year' style='width: 85px'>\
+                    <option class='empty'>(Year)</option>\
+                </select>\
+                <input type='text' class='edit-event-year-textbox bottom' style='width: 85px'>\
+            </span>\
+            <span class='edit-event-container'>\
+                <select class='edit-new-event-sport' style='width: 200px'>\
+                    <option class='empty'>(Sport)</option>\
+                </select>\
+                <input type='text' class='edit-event-sport-textbox bottom' style='width: 200px'>\
+            </span>\
+            <span class='edit-event-container'>\
+                <select class='edit-new-event-event right' style='width: 320px'>\
+                    <option class='empty'>(Event)</option>\
+                </select>\
+                <input type='text' class='edit-event-event-textbox bottom' style='width: 320px'>\
+            </span>\
+        </td>\
+    </tr>";
+
+    $("#edit-events-table tbody").prepend(rowString);
+})
+
+// dynamically create selection
+// * change event listener won't give a damn when the value is changed by jquery load so i have to do it manually *
+$("#edit-ui-content").on("change", ".edit-new-event-season", function() {
+    var row = $(this).parents("td");
+    var season = $(this).val();
+    $(this).children(".empty").remove();
+    row.find(".edit-new-event-year").load("options_query.php?m=year&s=" + season, function() {
+        var year = $(this).val();
+        row.find(".edit-new-event-sport").load("options_query.php?m=sport&s=" + season + "&y=" + year, function() {
+            var sport = $(this).val();
+            row.find(".edit-new-event-event").load("options_query.php?m=event", {
+                "season": season,
+                "year": year,
+                "sport": sport,
+                "sex": $("#edit-sex").val()
+            }, function() {
+                newInstance($(this), row.find(".edit-event-event-textbox"));
+            });
+            newInstance($(this), row.find(".edit-event-sport-textbox"));
+        });
+        newInstance($(this), row.find(".edit-event-year-textbox"));
+    });
+})
+
+$("#edit-ui-content").on("change", ".edit-new-event-year", function() {
+    var row = $(this).parents("td");
+    var season = row.find(".edit-new-event-season").val();
+    var year = $(this).val();
+    row.find(".edit-new-event-sport").load("options_query.php?m=sport&s=" + season + "&y=" + year, function() {
+        var sport = $(this).val();
+        row.find(".edit-new-event-event").load("options_query.php?m=event", {
+            "season": season,
+            "year": year,
+            "sport": sport,
+            "sex": $("#edit-sex").val()
+        }, function() {
+            newInstance($(this), row.find(".edit-event-event-textbox"));
+        });
+        newInstance($(this), row.find(".edit-event-sport-textbox"));
+    });
+    newInstance($(this), row.find(".edit-event-year-textbox"));
+})
+
+$("#edit-ui-content").on("change", ".edit-new-event-sport", function() {
+    var row = $(this).parents("td");
+    var season = row.find(".edit-new-event-season").val();
+    var year = row.find(".edit-new-event-year").val();
+    var sport = $(this).val();
+    row.find(".edit-new-event-event").load("options_query.php?m=event", {
+        "season": season,
+        "year": year,
+        "sport": sport,
+        "sex": $("#edit-sex").val()
+    }, function() {
+        newInstance($(this), row.find(".edit-event-event-textbox"));
+    })
+    newInstance($(this), row.find(".edit-event-sport-textbox"));
+})
+
+$("#edit-ui-content").on("change", ".edit-new-event-event", function() {
+    newInstance($(this), $(this).parents("td").find(".edit-event-event-textbox"));
+})
+
+$("#edit-ui-content").on("click", ".remove-new-event", function() {
+    $(this).parents("tr").remove();
+})
 
 // FUNCTION //
 
@@ -183,5 +291,29 @@ function maintainInput(selector) {
     }
     else {
         $(selector).val(val);
+    }
+}
+
+// if a selection value=new, display the text box for user to type in the new option
+// element - <jQuery selector> - the select box
+/**
+ * @param {JQuery<any>} checkElement 
+ * @param {JQuery<any>} targetElement
+ */
+function newInstance(checkElement, targetElement) {
+    var row = checkElement.parents("tr");
+    if (checkElement.val() == "new") {
+        targetElement.css("display", "block");
+    }
+    else {
+        targetElement.css("display", "none");
+    }
+
+    // check if all three possible textboxes are open
+    if (row.find(".edit-new-event-year").val() == "new" || row.find(".edit-new-event-sport").val() == "new" || row.find(".edit-new-event-event").val() == "new") {
+        row.css("border-bottom", "32px solid transparent");
+    }
+    else {
+        row.css("border-bottom", "0");
     }
 }

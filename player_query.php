@@ -124,7 +124,7 @@
                             </div>";
                 }
             } else {
-                echo "<p>沒有找到該運動員的資料。</p>";
+                echo "<p>Failed to fetch athlete data. Try to recreate the profile manually.</p>";
             }
             break;
         
@@ -190,17 +190,16 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div style='margin-left: 400px' class='modal-right'>
+                            <div style='margin-left: 380px; padding-left: 0' class='modal-right'>
                                 <div style='padding-bottom: 10px'>
-                                    <b style='font-size: 18px; padding-right: 250px'>Attended Events</b>
+                                    <b style='font-size: 18px; padding-right: 20px'>Attended Events</b>
                                     <button id='edit-new-event-btn'>Add</button>
                                 </div>
                                 <div id='edit-events-container'>
-                                    <table>
+                                    <table id='edit-events-table'>
                                         <colgroup>
-                                            <col style='width: 30px'>
-                                            <col style='width: 600px'>
-                                            <col style='width: 50px'>
+                                            <col style='width: 40px'>
+                                            <col style='width: 800px'>
                                         </colgroup>
                                         <tbody>
                                             ".genEvents($events)."

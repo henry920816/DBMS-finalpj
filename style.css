@@ -29,7 +29,7 @@ body {
     font-style: normal;
     font-variation-settings:
       "MONO" 1;
-  }
+}
 
 #navBarContainer {
     position: fixed;
@@ -182,6 +182,11 @@ input[type=text].left {
 
 input[type=text].right {
     border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+input[type=text].bottom {
+    border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 }
 
@@ -511,7 +516,65 @@ input:checked + .slider:before {
 }
 
 #edit-new-event-btn {
+    background-color: rgb(203, 203, 203);
     padding: 5px;
-    border: 2px solid black;
-    border-radius: 4px;
+    border: 3px solid rgb(91, 91, 91);
+    border-radius: 8px;
+    
+    font-family: "Oxygen", sans-serif;
+    font-weight: 700;
+
+    transition: background-color 0.1s;
+}
+
+#edit-new-event-btn:hover {
+    background-color: rgb(167, 167, 167);
+}
+
+#edit-events-table td:first-child {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.remove-new-event {
+    width: 20px;
+    height: 20px;
+
+    border: 3px solid darkred;
+    border-radius: 50%;
+
+    text-align: center;
+
+    color: darkred;
+    font-family: "Sono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    font-variation-settings:
+      "MONO" 1;
+}
+
+.remove-new-event:hover {
+    background-color: darkred;
+    color: white;
+}
+
+.remove-new-event span {
+    padding-top: 1px;
+    margin: auto;
+
+    font-size: 14px;
+}
+
+.edit-event-container {
+    position: relative;
+    display: inline-block;
+}
+
+.edit-event-year-textbox, .edit-event-sport-textbox, .edit-event-event-textbox {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 50%;
+    transform: translateX(-50%);
 }
