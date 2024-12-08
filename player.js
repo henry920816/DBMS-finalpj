@@ -285,13 +285,15 @@ function daysInMonth(month, year) {
 
 // make sure that the text box is a positive whole number
 function maintainInput(selector) {
-    var val = Number($(selector).val());
-    if (isNaN(val) || val % 1 != 0 || val <= 0) {
-        $(selector).val("");
-    }
-    else {
-        $(selector).val(val);
-    }
+    $(selector).each(function() {
+        var val = Number($(this).val());
+        if (isNaN(val) || val % 1 != 0 || val <= 0) {
+            $(this).val("");
+        }
+        else {
+            $(this).val(val);
+        }
+    })
 }
 
 // if a selection value=new, display the text box for user to type in the new option
