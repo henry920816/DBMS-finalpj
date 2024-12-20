@@ -3,19 +3,7 @@ include('database_connection.php');
 
 $method = $_GET['m'] ?? '';
 
-if ($method === 'get_events') {
-    $query = "SELECT DISTINCT sport AS event FROM AthleteRecords ORDER BY event ASC";
-    $result = mysqli_query($conn, $query);
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        echo '<option value="">Select an Event</option>';
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo '<option value="' . htmlspecialchars($row['event']) . '">' . htmlspecialchars($row['event']) . '</option>';
-        }
-    } else {
-        echo '<option value="">No events available</option>';
-    }
-} elseif ($method === 'all') {
+if ($method === 'all') {
     $query = "SELECT sport AS event, athlete_id, country, name, grade, year FROM AthleteRecords";
     $result = mysqli_query($conn, $query);
 

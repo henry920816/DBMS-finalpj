@@ -357,7 +357,7 @@
                                 result_id = '$result_id',
                                 country = '$noc',
                                 name = '$athlete',
-                                grade = '$grade',
+                                grade = '$grade$unit',
                                 year = '$year',
                                 ascend = '$asc'
                                 where sport = ".'"'.$sport.'"';

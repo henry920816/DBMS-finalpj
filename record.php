@@ -19,15 +19,6 @@
         <div style="text-align: center; font-size: 18px; padding-bottom: 20px">
             Select a record to view the Olympic athlete details:
         </div>
-        <div id="form">
-            <form name="form">
-                <label class="oxygen-bold">Choose an Event</label>
-                <select id="event-option">
-                    <option value="">No events available</option>
-                </select>
-                <input type="button" value="Show Records" id="submit" class="oxygen-bold">
-            </form>
-        </div>
         <div id="table">
             <table>
                 <colgroup>
