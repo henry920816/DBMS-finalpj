@@ -43,6 +43,17 @@
                     <input type="text" id="name" class="left" value="" placeholder="eg: Tai Tzu-ying">
                     <input type="submit" value="Search" id="submit" class="oxygen-bold">
                 </form>
+                <form style="margin-top: 10px">
+                    <label class="oxygen-bold">Filter</label>
+                    <select class="filter-country left" style="width: 280px">
+                        <option value="all">(All Countries)</option>
+                    </select>
+                    <select class="filter-sex right" style="width: 100px">
+                        <option value="all">(All)</option>
+                        <option value="Female">Female</option>
+                        <option value="Male">Male</option>
+                    </select>
+                </form>
             </div>
             <div id="table">
                 <table>
@@ -80,7 +91,6 @@
                     </span>
                 </div>
             </div>
-            
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
             // import jQuery //

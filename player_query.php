@@ -31,11 +31,13 @@
     switch ($mode) {
         // Search Player
         case 'search':
-            $name = $_REQUEST['p'];
+            $name = $_POST['player'];
+            $country = ($_POST['country'] == "all")? "" : $_POST['country'];
+            $sex = ($_POST['sex'] == "all") ? "" : $_POST['sex'];
             $sql = "SELECT A.name, A.sex, A.born, A.height, A.weight, A.country, A.athlete_id
                     FROM Athlete A
                     LEFT JOIN Details E ON A.athlete_id = E.athlete_id
-                    WHERE A.name LIKE '%$name%'
+                    WHERE A.name LIKE '%$name%' AND A.country LIKE '%$country%' AND A.sex LIKE '$sex%'
                     GROUP BY A.athlete_id";
             
             $result = $conn->query($sql);
@@ -213,16 +215,156 @@
             break;
         // Edit Record
         case "edit":
-            $sql = "update Athlete
-                    set name = '".$_POST["name"]."',
-                        sex = '".$_POST["sex"]."',
-                        born = '".$_POST["birthday"]."',
-                        height = '".$_POST["height"]."',
-                        weight = '".$_POST["weight"]."',
-                        country = '".$_POST["country"]."'
-                    where athlete_id = '".$_POST["id"]."'";
-            $result = $conn->query($sql);
-            echo $result;
+            $target = $_POST["target"];
+            if ($target == "basic") {
+                // Update: Athlete
+                $sql = "update Athlete
+                        set name = '".$_POST["name"]."',
+                            sex = '".$_POST["sex"]."',
+                            born = '".$_POST["birthday"]."',
+                            height = '".$_POST["height"]."',
+                            weight = '".$_POST["weight"]."',
+                            country = '".$_POST["country"]."'
+                        where athlete_id = '".$_POST["id"]."'";
+                $result = $conn->query($sql);
+                echo $result;
+            }
+            else if ($target == "event") {
+                // Insert: Details, Games, Results, AthleteRecords, Medal
+                // [Details]
+                // EDITION & EDITION_ID
+                $year = "";
+                $edition = "";
+                $edition_id = "";
+                if ($_POST["new-year"] == "true") {
+                    $year = $_POST["year"];
+                    $edition = $year." ".$_POST["season"]." Olympics";
+                    // generate new id
+                    $sql = "SELECT DISTINCT max(convert(edition_id, SIGNED INT)) AS id
+                            FROM Medal";
+                    $edition_id = $conn->query($sql)->fetch_assoc()["id"] + 1;
+                }
+                // get year from edition_id
+                else {
+                    $sql = "SELECT edition
+                            FROM Medal
+                            WHERE edition_id = '{$_POST['year']}'";
+                    $edition = $conn->query($sql)->fetch_assoc()["edition"];
+                    $edition_id = $_POST["year"];
+                    $year = explode(" ", $edition)[0];
+                }
+
+                // COUNTRY_NOC
+                $sql = "SELECT noc
+                        FROM country
+                        WHERE country = '{$_POST['country']}'";
+                $noc = $conn->query($sql)->fetch_assoc()["noc"];
+
+                // SPORT
+                $sport = $_POST["sport"];
+
+                // EVENT
+                $event = "";
+                if ($_POST["new-event"] == "true") {
+                    $event = $_POST["event"];
+                }
+                else {
+                    $sql = "SELECT DISTINCT event
+                            FROM Details AS d
+                            WHERE d.result_id = '{$_POST['event']}'";
+                    $event = $conn->query($sql)->fetch_assoc()["event"];
+                }
+
+                // RESULT_ID
+                // ISTEAMSPORT (empty unless exists)
+                $result_id = "";
+                $isTeamSport = "";
+                if ($_POST["new"] == "true") {
+                    $sql = "SELECT DISTINCT max(convert(result_id, SIGNED INT)) AS id
+                            FROM Details";
+                    $result_id = $conn->query($sql)->fetch_assoc()["id"];
+                }
+                else {
+                    $result_id = $_POST["event"];
+                    $sql = "SELECT isTeamSport
+                            FROM Details
+                            WHERE result_id = '{$_POST['event']}'";
+                    $isTeamSport = $conn->query($sql)->fetch_assoc()["isTeamSport"];
+                }
+
+                // ATHLETE
+                $athlete = $_POST["athlete"];
+
+                // ATHLETE_ID
+                $athlete_id = $_POST["athleteID"];
+
+                // POS (empty)
+                // MEDAL (empty)
+
+                $sql = "INSERT INTO Details (edition, edition_id, country_noc, sport, event, result_id, athlete, athlete_id, pos, medal, isTeamSport)
+                        VALUES
+                        ('$edition', '$edition_id', '$noc', '$sport', '$event', '$result_id', '$athlete', '$athlete_id', '', '', '$isTeamSport')";
+                $conn->query($sql);
+
+                // [Results]
+                if ($_POST['new'] == "true") {
+                    $sql = "INSERT INTO Results (result_id, event_title, edition, edition_id, sport, sport_url, result_date, result_location, result_participants, result_format, result_detail, result_description)
+                            VALUES
+                            ('$result_id', '$event', '$edition', '$edition_id', '$sport', '', '', '', '', '', '', '')";
+                    $conn->query($sql);
+                }
+
+                // [Medal]
+                if ($_POST["new-year"] == "true") {
+                    // check duplicates
+                    $check = $conn->query("SELECT country_noc FROM Medal WHERE edition = '$edition' AND country_noc = '$noc'")->num_rows;
+                    if ($check == "0") {
+                        $sql = "INSERT INTO Medal (edition_id, edition, year, country, country_noc, gold, silver, bronze)
+                                VALUES
+                                ('$edition_id', '$edition', '$year', '{$_POST['country']}', '$noc', 0, 0, 0)";
+                        $conn->query($sql);
+                    }
+                }
+
+                // [AthleteRecords]
+                // check if it's olympic record
+                if ($_POST["rec"] == "1") {
+                    $grade = (float)$_POST["grade"];
+                    $sql = "SELECT grade, ascend, s
+                            FROM (SELECT DISTINCT d.sport AS sport, d.event AS event, grade, ascend, a.sport AS s
+                                  FROM AthleteRecords a, Details d
+                                  WHERE a.result_id = d.result_id
+                                  ORDER BY sport) AS Q,
+                                 (SELECT DISTINCT d.sport, d.event
+                                  FROM Details d
+                                  WHERE d.result_id = '$result_id'
+                                  ORDER BY sport) AS P
+                            WHERE Q.sport = P.sport AND Q.event = P.event";
+                    $result = $conn->query($sql)->fetch_assoc();
+                    $old_record = $result["grade"];
+                    $asc = $result["ascend"];
+                    $sport = $result["s"];
+
+                    // get unit
+                    $arr = explode("(",$old_record);
+                    $old_record = (float)$arr[0];
+                    $unit = "(".$arr[1];
+
+                    // compare
+                    if (($asc == 0 && $grade < $old_record) || ($asc == 1 && $grade > $old_record)) {
+                        $sql = "update AthleteRecords
+                                set athlete_id = '$athlete_id',
+                                result_id = '$result_id',
+                                country = '$noc',
+                                name = '$athlete',
+                                grade = '$grade',
+                                year = '$year',
+                                ascend = '$asc'
+                                where sport = ".'"'.$sport.'"';
+                        $conn->query($sql);
+                    }
+                }
+            }
             break;
 
         // Delete Record

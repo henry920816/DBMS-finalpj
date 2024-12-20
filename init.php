@@ -22,7 +22,8 @@
     $table_status = $table->num_rows > 0;
 
     $conn->query("CREATE TABLE IF NOT EXISTS Athlete (
-                            athlete_id INT PRIMARY KEY,
+                            -- will get the max+1 value in the table , when insert new athlete without athlete_id
+                            athlete_id INT AUTO_INCREMENT PRIMARY KEY, 
                             name VARCHAR(255),
                             sex VARCHAR(10),
                             born VARCHAR(80),
@@ -33,8 +34,8 @@
                             description TEXT,
                             special_notes TEXT)");
     $conn->query("CREATE TABLE IF NOT EXISTS Medal (
-                            edition_id VARCHAR(255),
                             edition VARCHAR(255),
+                            edition_id VARCHAR(255),
                             year INT,
                             country VARCHAR(255),
                             country_noc CHAR(3),
@@ -87,14 +88,16 @@
     $conn->query("CREATE TABLE IF NOT EXISTS Country (
                             noc CHAR(3) PRIMARY KEY,
                             country VARCHAR(255))");
-    $conn->query("CREATE TABLE AthleteRecords (
+    $conn->query("CREATE TABLE IF NOT EXISTS AthleteRecords (
                             sport VARCHAR(255),
+                            result_id INT,
                             athlete_id INT,
                             country VARCHAR(50),
                             name VARCHAR(255),
                             grade VARCHAR(20), -- Used VARCHAR for mixed formats (e.g., times, distances)
                             year YEAR,
                             ascend TINYINT, -- Indicates whether the record is ascending (0 or 1)
+                            
                             FOREIGN KEY (athlete_id) REFERENCES Athlete(athlete_id))");
 
     // only import when the table is newly created
@@ -153,5 +156,8 @@
     }*/
 
     // close connection
+    if ($reset == 1) {
+        echo 'Database Reset Successfully';
+    }
     $conn->close();
 ?>

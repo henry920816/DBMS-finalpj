@@ -1,5 +1,8 @@
+--updated: 12/19 Athlete table : website no need to input athlete_id for insert new athlete 
+
 CREATE TABLE AthleteRecords (
     sport VARCHAR(255),
+    result_id INT,
     athlete_id INT,
     country VARCHAR(50),
     name VARCHAR(255),
@@ -10,8 +13,12 @@ CREATE TABLE AthleteRecords (
     FOREIGN KEY (athlete_id) REFERENCES Athlete(athlete_id)
 );
 
+
+
 CREATE TABLE Athlete (
-    athlete_id INT PRIMARY KEY,
+    -- will get the max+1 value in the table , when insert new athlete without athlete_id
+    athlete_id INT AUTO_INCREMENT PRIMARY KEY, 
+     
     name VARCHAR(255),
     sex VARCHAR(10),
     born VARCHAR(80),
