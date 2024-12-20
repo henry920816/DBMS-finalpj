@@ -584,6 +584,32 @@ input:checked + .slider:before {
     position: absolute;
 }
 
-.edit-events-remove:checked {
-    content: '&#x2716';
+.edit-events-remove {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.edit-remove-label {
+    display: inline-block;
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border-radius: 30%;
+    border: 2px solid #ddd;
+    background-color: white;
+    color: white;
+    vertical-align: middle;
+    overflow-y: hidden;
+}
+
+.edit-events-remove:checked + .edit-remove-label {
+    line-height: 0;
+    background-color: rgb(177, 36, 36);
+    color: black;
+}
+
+.edit-events-remove:checked + .edit-remove-label span {
+    display: inline-block;
+    padding-top: 1px;
 }

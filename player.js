@@ -262,11 +262,29 @@ $("#confirm").on("click", function() {
                         "athleteID": $(".select").attr("data-value")
                     },
                     success: function(data) {
-                        console.log(data);
+                        //console.log(data);
                     }
                 })
             }
         })
+
+        // remove event
+        var playerID = $(".select").attr("data-value");
+        $(".edit-events-remove").each(function() {
+            if($(this).prop("checked")) {
+                var resultID = $(this).val();
+                $.ajax({
+                    url: "player_query.php?m=delete",
+                    type: "POST",
+                    data: {
+                        "target": "event",
+                        "resultID": resultID,
+                        "playerID": playerID
+                    }
+                });
+            }
+        });
+
         // close modal
         if (success) {
             enterEdit = false;

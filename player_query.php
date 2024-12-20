@@ -369,6 +369,13 @@
 
         // Delete Record
         case 'delete':
+            if ($_POST["target"] == "event") {
+                // Delete: Details
+                $result_id = $_POST["resultID"];
+                $player_id = $_POST["playerID"];
+                $sql = "delete from Details where result_id = '$result_id' and athlete_id = '$player_id'";
+                $conn->query($sql);
+            }
             break;
     }
 
@@ -487,7 +494,18 @@
         $output = "";
         while ($row = $query->fetch_assoc()) {
             $output .= "<tr>
-                            <td><input type='checkbox' class='edit-events-remove' value='".$row["id"]."'></td>
+                            <td>
+                                <label>
+                                    <input type='checkbox' class='edit-events-remove' value='".$row["id"]."'>
+                                    <span class='edit-remove-label'>
+                                        <span class='material-symbols-outlined prevent-select' style='font-size: 15px'>
+                                            <span>
+                                                close
+                                            </span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </td>
                             <td>".$row["edition"].", ".$row["sport"]." - ".$row["event"]."</td>
                         </tr>";
         }
