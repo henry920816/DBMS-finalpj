@@ -585,9 +585,7 @@ input:checked + .slider:before {
 }
 
 .edit-events-remove {
-    opacity: 0;
-    width: 0;
-    height: 0;
+    display: none;
 }
 
 .edit-remove-label {
@@ -598,15 +596,15 @@ input:checked + .slider:before {
     border-radius: 30%;
     border: 2px solid #ddd;
     background-color: white;
-    color: white;
     vertical-align: middle;
+    color: white;
     overflow-y: hidden;
 }
 
 .edit-events-remove:checked + .edit-remove-label {
     line-height: 0;
     background-color: rgb(177, 36, 36);
-    color: black;
+    color: rgb(255, 255, 255);
 }
 
 .edit-events-remove:checked + .edit-remove-label span {
