@@ -148,6 +148,12 @@
                             order by edition desc , event";
             $events = $conn->query($sql_event);
 
+            $sql_record = "SELECT DISTINCT a.year, d.sport AS sport, d.event AS event
+                            FROM AthleteRecords a, Details d
+                            WHERE a.result_id = d.result_id AND a.athlete_id = '$playerId'
+                            ORDER BY sport";
+            $records = $conn->query($sql_record);
+
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     $date = getDateArr($row["born"]);
@@ -204,7 +210,7 @@
                                             <col style='width: 800px'>
                                         </colgroup>
                                         <tbody>
-                                            ".genEvents($events)."
+                                            ".genEvents($events, $records)."
                                         </tbody>
                                     </table>
                                 </div>
@@ -490,13 +496,29 @@
         return $output;
     }
 
-    function genEvents(mysqli_result $query) {
+    function genEvents(mysqli_result $query, mysqli_result $records) {
         $output = "";
+        $rec = [];
+        while ($record = $records->fetch_assoc()) {
+            $rec[] = $record;
+        }
         while ($row = $query->fetch_assoc()) {
+            $is_record = false;
+            foreach ($rec as $x => $record) {
+                if ($record["year"] == explode(" ", $row["edition"])[0] && $record["sport"] == $row["sport"] && $record["event"] == $row["event"]) {
+                    $is_record = true;
+                    break;
+                }
+            }
+
             $output .= "<tr>
                             <td>
                                 <label>
-                                    <input type='checkbox' class='edit-events-remove' value='".$row["id"]."'>
+                                    <input type='checkbox' class='edit-events-remove' value='".$row["id"]."' ";
+            if ($is_record) {
+                $output .= "disabled='disabled'";
+            }
+            $output .=              ">
                                     <span class='edit-remove-label'>
                                         <span class='material-symbols-outlined prevent-select' style='font-size: 15px'>
                                             <span>

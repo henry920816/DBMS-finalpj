@@ -360,131 +360,60 @@ $("#edit-ui-content").on("click", "#edit-new-event-btn", function() {
 })
 
 // dynamically create selection
-// * change event listener won't give a damn when the value is changed by jquery load so i have to do it manually *
-$("#edit-ui-content").on("change", ".edit-new-event-season", function() {
-    var row = $(this).parents("td");
-    var season = $(this).val();
-    $(this).children(".empty").remove();
-    row.find(".edit-new-event-year").load("options_query.php?m=year&s=" + season, function() {
-        var year = $(this).val();
-        row.find(".edit-new-event-sport").load("options_query.php?m=sport&s=" + season + "&y=" + year, function() {
-            var sport = $(this).val();
-            row.find(".edit-new-event-event").load("options_query.php?m=event", {
-                "season": season,
-                "year": year,
-                "sport": sport,
-                "sex": $("#edit-sex").val()
-            }, function() {
-                var event = $(this).val();
-                $.ajax({
-                    type: "POST",
-                    url: "options_query.php?m=record",
-                    data: {
-                        "sport": sport,
-                        "event": event
-                    },
-                    success: function(str) {
-                        if (str == '0') {
-                            row.find(".edit-record-container").css("display", "none").attr("data-value", "0");
-                        }
-                        else {
-                            // get unit
-                            var id = str.indexOf("(");
-                            var unit = str.substring(id + 1, str.length - 1);
-                            row.find(".edit-record-container").css("display", "block").attr("data-value", "1").find(".edit-record-unit").html(unit);
-                        }
-                        newInstance(row.find(".edit-record-container"), "");
-                    }
-                })
-                newInstance($(this), row.find(".edit-event-event-textbox"));
-            });
-            newInstance($(this), row.find(".edit-event-sport-textbox"));
-        });
-        newInstance($(this), row.find(".edit-event-year-textbox"));
-    });
-})
+// * change event listener won't give a damn when the value is changed by jquery load so i have to do it manually * //
+$("#edit-ui-content").on("change", ".edit-new-event-season", function() { getYearOption($(this).parents("td")); });
+$("#edit-ui-content").on("change", ".edit-new-event-year", function() { getSportOption($(this).parents("td")); });
+$("#edit-ui-content").on("change", ".edit-new-event-sport", function() { getEventOption($(this).parents("td")); });
+$("#edit-ui-content").on("change", ".edit-new-event-event", function() { checkNewRecord($(this).parents("td")); });
 
-$("#edit-ui-content").on("change", ".edit-new-event-year", function() {
-    var row = $(this).parents("td");
+// FUNCTION //
+
+/**
+ * 
+ * @param {JQuery} row 
+ */
+function getYearOption(row) {
     var season = row.find(".edit-new-event-season").val();
-    var year = $(this).val();
-    row.find(".edit-new-event-sport").load("options_query.php?m=sport&s=" + season + "&y=" + year, function() {
-        var sport = $(this).val();
-        row.find(".edit-new-event-event").load("options_query.php?m=event", {
-            "season": season,
-            "year": year,
-            "sport": sport,
-            "sex": $("#edit-sex").val()
-        }, function() {
-            var event = $(this).val();
-            $.ajax({
-                type: "POST",
-                url: "options_query.php?m=record",
-                data: {
-                    "sport": sport,
-                    "event": event
-                },
-                success: function(str) {
-                    if (str == '0') {
-                        row.find(".edit-record-container").css("display", "none").attr("data-value", "0");
-                    }
-                    else {
-                        // get unit
-                        var id = str.indexOf("(");
-                        var unit = str.substring(id + 1, str.length - 1);
-                        row.find(".edit-record-container").css("display", "block").attr("data-value", "1").find(".edit-record-unit").html(unit);
-                    }
-                    newInstance(row.find(".edit-record-container"), "");
-                }
-            })
-            newInstance($(this), row.find(".edit-event-event-textbox"));
-        });
-        newInstance($(this), row.find(".edit-event-sport-textbox"));
-    });
-    newInstance($(this), row.find(".edit-event-year-textbox"));
-})
+    row.find(".edit-new-event-season").children(".empty").remove();
+    row.find(".edit-new-event-year").load("options_query.php?m=year&s=" + season, function() { getSportOption(row); });
+}
 
-$("#edit-ui-content").on("change", ".edit-new-event-sport", function() {
-    var row = $(this).parents("td");
+/**
+ * 
+ * @param {JQuery} row 
+ */
+function getSportOption(row) {
     var season = row.find(".edit-new-event-season").val();
     var year = row.find(".edit-new-event-year").val();
-    var sport = $(this).val();
+    row.find(".edit-new-event-sport").load("options_query.php?m=sport&s=" + season + "&y=" + year,
+        function() { getEventOption(row); });
+    newInstance(row.find(".edit-new-event-year"), row.find(".edit-event-year-textbox"));
+}
+
+/**
+ * 
+ * @param {JQuery} row 
+ */
+function getEventOption(row) {
+    var season = row.find(".edit-new-event-season").val();
+    var year = row.find(".edit-new-event-year").val();
+    var sport = row.find(".edit-new-event-sport").val();
     row.find(".edit-new-event-event").load("options_query.php?m=event", {
         "season": season,
         "year": year,
         "sport": sport,
         "sex": $("#edit-sex").val()
-    }, function() {
-        var event = $(this).val();
-        $.ajax({
-            type: "POST",
-            url: "options_query.php?m=record",
-            data: {
-                "sport": sport,
-                "event": event
-            },
-            success: function(str) {
-                if (str == '0') {
-                    row.find(".edit-record-container").css("display", "none").attr("data-value", "0");
-                }
-                else {
-                    // get unit
-                    var id = str.indexOf("(");
-                    var unit = str.substring(id + 1, str.length - 1);
-                    row.find(".edit-record-container").css("display", "block").attr("data-value", "1").find(".edit-record-unit").html(unit);
-                }
-                newInstance(row.find(".edit-record-container"), "");
-            }
-        })
-        newInstance($(this), row.find(".edit-event-event-textbox"));
-    });
-    newInstance($(this), row.find(".edit-event-sport-textbox"));
-})
+    }, function() { checkNewRecord(row); });
+    newInstance(row.find(".edit-new-event-sport"), row.find(".edit-event-sport-textbox"));
+}
 
-$("#edit-ui-content").on("change", ".edit-new-event-event", function() {
-    var row = $(this).parents("td");
+/**
+ * 
+ * @param {JQuery} row 
+ */
+function checkNewRecord(row) {
     var sport = row.find(".edit-new-event-sport").val();
-    var event = $(this).val();
+    var event = row.find(".edit-new-event-event").val();
     $.ajax({
         type: "POST",
         url: "options_query.php?m=record",
@@ -505,14 +434,12 @@ $("#edit-ui-content").on("change", ".edit-new-event-event", function() {
             newInstance(row.find(".edit-record-container"), "");
         }
     })
-    newInstance($(this), row.find(".edit-event-event-textbox"));
-})
+    newInstance(row.find(".edit-new-event-event"), row.find(".edit-event-event-textbox"));
+}
 
 $("#edit-ui-content").on("click", ".remove-new-event", function() {
     $(this).parents("tr").remove();
 })
-
-// FUNCTION //
 
 function daysInMonth(month, year) {
     var y = Number(year);

@@ -599,6 +599,7 @@ input:checked + .slider:before {
     vertical-align: middle;
     color: white;
     overflow-y: hidden;
+    padding-top: 1px;
 }
 
 .edit-events-remove:checked + .edit-remove-label {
@@ -609,5 +610,9 @@ input:checked + .slider:before {
 
 .edit-events-remove:checked + .edit-remove-label span {
     display: inline-block;
-    padding-top: 1px;
+}
+
+.edit-events-remove:disabled + .edit-remove-label {
+    background-color: rgb(197, 197, 197);
+    color: rgb(197, 197, 197);
 }
