@@ -360,11 +360,19 @@ $("#edit-ui-content").on("click", "#edit-new-event-btn", function() {
 })
 
 // dynamically create selection
-// * change event listener won't give a damn when the value is changed by jquery load so i have to do it manually * //
 $("#edit-ui-content").on("change", ".edit-new-event-season", function() { getYearOption($(this).parents("td")); });
 $("#edit-ui-content").on("change", ".edit-new-event-year", function() { getSportOption($(this).parents("td")); });
 $("#edit-ui-content").on("change", ".edit-new-event-sport", function() { getEventOption($(this).parents("td")); });
 $("#edit-ui-content").on("change", ".edit-new-event-event", function() { checkNewRecord($(this).parents("td")); });
+
+// change event option when sex is modified as well
+$("#edit-ui-content").on("change", "#edit-sex", function() {
+    $(".edit-new-event-event").each(function() {
+        if ($(this).val() != "") {
+            getEventOption($(this).parents("td"));
+        }
+    });
+})
 
 // FUNCTION //
 

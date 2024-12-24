@@ -505,7 +505,7 @@
         while ($row = $query->fetch_assoc()) {
             $is_record = false;
             foreach ($rec as $x => $record) {
-                if ($record["year"] == explode(" ", $row["edition"])[0] && $record["sport"] == $row["sport"] && $record["event"] == $row["event"]) {
+                if ($record["year"] - $record["year"] % 2 == explode(" ", $row["edition"])[0] && $record["sport"] == $row["sport"] && $record["event"] == $row["event"]) {
                     $is_record = true;
                     break;
                 }
