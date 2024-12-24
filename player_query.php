@@ -7,7 +7,6 @@
     //    -> profile: display profile
     //    -> edit-ui: display edit ui
     //    -> edit: update player profile
-    //    -> delete-ui: display delete ui (unused)
     //    -> delete: delete player profile
     //    -> new-ui: display create ui
     //    -> new: insert new player
@@ -39,9 +38,18 @@
                     LEFT JOIN Details E ON A.athlete_id = E.athlete_id
                     WHERE A.name LIKE '%$name%' AND A.country LIKE '%$country%' AND A.sex LIKE '$sex%'
                     GROUP BY A.athlete_id";
-            
             $result = $conn->query($sql);
+
+            $sql_record = "SELECT DISTINCT a.athlete_id
+                            FROM AthleteRecords a
+                            WHERE a.name LIKE '%$name%'";
+            $record_hold = $conn->query($sql_record);
+
             if ($result->num_rows > 0) {
+                $arr = [];
+                while ($record = $record_hold->fetch_assoc()) {
+                    $arr[] = $record["athlete_id"];
+                }
                 while ($row = $result->fetch_assoc()) {
                     $rowString = '<tr class="row" data-value="'.$row["athlete_id"].'">
                                         <td>'.$row["name"].'</td>
@@ -55,7 +63,11 @@
                                                         edit
                                                     </span>
                                                 </button>
-                                                <button class="delete">
+                                                <button class="delete" ';
+                    if (is_int(array_search($row["athlete_id"], $arr))) {
+                        $rowString .= "disabled='disabled'";
+                    }
+                    $rowString .= '                  >
                                                     <span class="material-symbols-outlined">
                                                         delete
                                                     </span>
@@ -284,7 +296,7 @@
                 // RESULT_ID
                 // ISTEAMSPORT (empty unless exists)
                 $result_id = "";
-                $isTeamSport = "";
+                $isTeamSport = "0";
                 if ($_POST["new"] == "true") {
                     $sql = "SELECT DISTINCT max(convert(result_id, SIGNED INT)) AS id
                             FROM Details";
@@ -377,9 +389,64 @@
         case 'delete':
             if ($_POST["target"] == "event") {
                 // Delete: Details
+                // Update: Medal
                 $result_id = $_POST["resultID"];
                 $player_id = $_POST["playerID"];
+
+                // [Medal]
+                $sql = "SELECT if(medal != '', medal, 'None') as medal, edition_id, country_noc
+                        FROM Details
+                        WHERE athlete_id = '$player_id' AND result_id = '$result_id'";
+                $m = $conn->query($sql)->fetch_assoc();
+                $edition_id = $m["edition_id"];
+                $noc = $m["country_noc"];
+                $medal = $m["medal"];
+
+                if ($medal != "None") {
+                    $sql = "UPDATE Medal
+                            SET $medal = $medal - 1
+                            WHERE edition_id = '$edition_id' AND country_noc = '$noc'";
+                    $conn->query($sql);
+                }
+
+                // [Details]
                 $sql = "delete from Details where result_id = '$result_id' and athlete_id = '$player_id'";
+                $conn->query($sql);
+            }
+            else if ($_POST["target"] == "player") {
+                $player_id = $_POST["id"];
+
+                // get all events
+                $sql = "select result_id as id, if(medal != '', medal, 'None') as medal, edition_id, country_noc
+                        from Details
+                        where athlete_id = '$player_id'";
+                $events = $conn->query($sql);
+
+                // delete all events
+                while ($event = $events->fetch_assoc()) {
+                    // Delete: Details
+                    // Update: Medal
+
+                    // [Details]
+                    $sql = "delete from Details where result_id = '{$event['id']}' and athlete_id = '$player_id'";
+                    $conn->query($sql);
+
+                    // [Medal]
+                    $edition_id = $event["edition_id"];
+                    $noc = $event["country_noc"];
+                    $medal = $event["medal"];
+
+                    if ($medal != "None") {
+                        $sql = "UPDATE Medal
+                                SET $medal = $medal - 1
+                                WHERE edition_id = '$edition_id' AND country_noc = '$noc'";
+                        $conn->query($sql);
+                    }
+                }
+
+                // delete player
+                // Delete: Athlete
+                $sql = "delete from Athlete where athlete_id ='$player_id'";
                 $conn->query($sql);
             }
             break;

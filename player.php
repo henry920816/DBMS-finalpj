@@ -91,6 +91,16 @@
                     </span>
                 </div>
             </div>
+            <div id="delete-ui">
+                <div id="delete-warning">
+                    <h2>Are you SURE you want to delete?</h2>
+                    <p style="text-align: center">This action <b style="color: red">cannot</b> be reverted</p>
+                    <span id="delete-modal-button">
+                        <button id="delete-confirm">Confirm</button>
+                        <button id="delete-cancel">Cancel</button>
+                    </span>
+                </div>
+            </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
             // import jQuery //

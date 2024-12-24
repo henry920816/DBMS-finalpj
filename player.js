@@ -41,7 +41,8 @@ $("#submit").on("click", function(event) {
 $("#table").on("click", ".row", function() {
     $(this).addClass("select");
     if (!hover) {
-        var playerId = this.dataset.value; // get player id
+        // get player id
+        var playerId = $(this).attr("data-value");
     
         // show profile animation
         $("#profile").css("height", "100%").css("opacity", "100%");
@@ -52,12 +53,12 @@ $("#table").on("click", ".row", function() {
     }
 })
 
-// close the profile
+// close profile
 $("body").on("click", "#profile", function(event) {
     if (!$(event.target).parents().is("#profile")) {
         // unmark as selected
         $(".select").removeClass("select");
-        // close animation
+
         $("#profile").css("height", "0").css("opacity", "0");
         $("#profile-content").css("marginTop", "130px").css("marginBottom", "20px").css("opacity", "0");
         // clear profile content
@@ -66,25 +67,42 @@ $("body").on("click", "#profile", function(event) {
 })
 
 // open edit ui
-$("#table").on("click", ".edit", function(event) {
-    var playerId = $(event.target).parents(".row").attr("data-value");
+$("#table").on("click", ".edit", function() {
+    var playerId = $(this).parents(".row").attr("data-value");
     $("#edit-ui").css("height", "100%").css("opacity", "100%");
     $("#edit-ui-content").css("marginTop", "100px").css("marginButtom", "50px").css("opacity", "100%");
     // load autofill
     $("#edit-req").load("player_query.php?m=edit-ui&p=" + playerId);
 })
 
-// close the edit ui
+// close edit ui
 $("body").on("click", "#edit-ui", function(event) {
     if (!$(event.target).parents().is("#edit-ui")) {
         enterEdit = false;
         // unmark as selected
         $(".select").removeClass("select");
-        // close animation
+
         $("#edit-ui").css("height", "0").css("opacity", "0");
         $("#edit-ui-content").css("marginTop", "130px").css("marginBottom", "20px").css("opacity", "0");
         // clear content
         $("#edit-req").html("");
+    }
+})
+
+// open delete ui
+$("table").on("click", ".delete", function() {
+    $("#delete-ui").css("height", "100%").css("opacity", "100%");
+    $("#delete-warning").css("marginTop", "250px").css("opacity", "100%");
+})
+
+// close delete ui
+$("body").on("click", "#delete-ui", function(event) {
+    if (!$(event.target).parents().is("#delete-ui")) {
+        // unmark as selected
+        $(".select").removeClass("select");
+
+        $("#delete-ui").css("height", "0").css("opacity", "0");
+        $("#delete-warning").css("marginTop", "280px").css("opacity", "0");
     }
 })
 
@@ -97,6 +115,14 @@ $("#cancel").on("click", function() {
     $("#edit-ui-content").css("marginTop", "130px").css("marginBottom", "20px").css("opacity", "0");
     // clear content
     $("#edit-req").html("");
+})
+
+$("#delete-cancel").on("click", function() {
+    // unmark as selected
+    $(".select").removeClass("select");
+
+    $("#delete-ui").css("height", "0").css("opacity", "0");
+    $("#delete-warning").css("marginTop", "280px").css("opacity", "0");
 })
 
 $(".slider").on("click", function() {
@@ -280,6 +306,9 @@ $("#confirm").on("click", function() {
                         "target": "event",
                         "resultID": resultID,
                         "playerID": playerID
+                    },
+                    success: function(data) {
+                        //console.log(data);
                     }
                 });
             }
@@ -311,6 +340,36 @@ $("#confirm").on("click", function() {
             alert("update failed");
         }
     }
+})
+
+$("#delete-confirm").on("click", function() {
+    var id = $(".select").attr("data-value");
+    $.ajax({
+        url: "player_query.php?m=delete",
+        type: "POST",
+        data: {
+            "target": "player",
+            "id": id
+        },
+        success: function() {
+            // unmark as selected
+            $(".select").removeClass("select");
+            // close animation
+            $("#delete-ui").css("height", "0").css("opacity", "0");
+            $("#delete-warning").css("marginTop", "280px").css("opacity", "0");
+
+            alert("delete successfully!");
+            // reload search
+            $("#table-content").load("player_query.php?m=search", {
+                "player": search.name,
+                "country": search.country,
+                "sex": search.sex
+            }, function() {
+                $(".edit").css("right", "-45px").css("opacity", "100%");
+                $(".delete").css("right", "-75px").css("opacity", "100%");
+            });
+        }
+    })
 })
 
 $("#edit-ui-content").on("click", "#edit-new-event-btn", function() {
