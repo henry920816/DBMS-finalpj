@@ -68,7 +68,12 @@
                             <th>Athlete</th>
                             <th>Country</th>
                             <th>Born</th>
-                            <th>Sex</th>
+                            <th>
+                                Sex
+                                <div style="position: relative">
+                                    <button class="new">+ New</button>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="table-content"></tbody>

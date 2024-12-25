@@ -1,5 +1,6 @@
 var hover = false;
 var enterEdit = false;
+var mode = "";
 var currentMonth;
 var search = {
     name: "",
@@ -25,7 +26,7 @@ $("#submit").on("click", function(event) {
         search.sex = sex;
         // uncheck edit mode
         $("#edit-enable").prop("checked", false);
-        $(".edit, .delete").css("display", "none").css("opacity", "0");
+        $(".edit, .delete, .new").css("opacity", "0");
         
         var url = "player_query.php?m=search";
         $("#table-content").load(url, {
@@ -68,9 +69,11 @@ $("body").on("click", "#profile", function(event) {
 
 // open edit ui
 $("#table").on("click", ".edit", function() {
+    mode = "edit";
     var playerId = $(this).parents(".row").attr("data-value");
     $("#edit-ui").css("height", "100%").css("opacity", "100%");
     $("#edit-ui-content").css("marginTop", "100px").css("marginButtom", "50px").css("opacity", "100%");
+    $("#edit-ui-content > h2").html("Edit Profile");
     // load autofill
     $("#edit-req").load("player_query.php?m=edit-ui&p=" + playerId);
 })
@@ -106,6 +109,15 @@ $("body").on("click", "#delete-ui", function(event) {
     }
 })
 
+// open new ui
+$(".new").on("click", function() {
+    mode = "new";
+    $("#edit-ui").css("height", "100%").css("opacity", "100%");
+    $("#edit-ui-content").css("marginTop", "100px").css("marginButtom", "50px").css("opacity", "100%");
+    $("#edit-ui-content > h2").html("Create Profile");
+    $("#edit-req").load("player_query.php?m=new-ui");
+})
+
 $("#cancel").on("click", function() {
     enterEdit = false;
     // unmark as selected
@@ -129,9 +141,10 @@ $(".slider").on("click", function() {
     if (!$("#edit-enable").prop("checked")) {
         $(".edit").css("right", "-45px").css("opacity", "100%");
         $(".delete").css("right", "-75px").css("opacity", "100%");
+        $(".new").css("right", "-80px").css("opacity", "100%");
     }
     else {
-        $(".edit, .delete").css("right", "-1000px").css("opacity", "0");
+        $(".edit, .delete, .new").css("right", "-1000px").css("opacity", "0");
     }
 })
 
@@ -196,11 +209,14 @@ $("#confirm").on("click", function() {
     
     // check basic profile
     var name = $("#edit-name").val();
+    var id = $("#edit-req > h3").attr("data-value");
     var height = $("#edit-height").val();
     var weight = $("#edit-weight").val();
     var byear = $("#edit-byear").val();
     var bmonth = $("#edit-bmonth").val().padStart(2, "0");
     var bday = $("#edit-bday").val().padStart(2, "0");
+    var noc = $("#edit-country").val();
+    var sex = $("#edit-sex").val();
 
     if (name == "" || height == "" || weight == "" || byear == "") {
         hasEmpty = true;
@@ -218,13 +234,14 @@ $("#confirm").on("click", function() {
                 type: "POST",
                 data: {
                     "target": "basic",
-                    "id": $(".select").attr("data-value"),
-                    "name": $("#edit-name").val(),
-                    "sex": $("#edit-sex").val(),
+                    "mode": mode,
+                    "id": id,
+                    "name": name,
+                    "sex": sex,
                     "birthday": byear + "-" + bmonth + "-" + bday,
-                    "height": $("#edit-height").val(),
-                    "weight": $("#edit-weight").val(),
-                    "country": $("#edit-country").val()
+                    "height": height,
+                    "weight": weight,
+                    "noc": noc
                 },
                 success: function(data) {
                     if (data != "1") {
@@ -283,9 +300,9 @@ $("#confirm").on("click", function() {
                         "new-sport": hasNewSport,
                         "new-event": hasNewEvent,
                         "rec": hasRecord,
-                        "country": $("#edit-country").val(),
-                        "athlete": $("#edit-name").val(),
-                        "athleteID": $(".select").attr("data-value")
+                        "noc": noc,
+                        "athlete": name,
+                        "athleteID": id
                     },
                     success: function(data) {
                         //console.log(data);
@@ -295,7 +312,6 @@ $("#confirm").on("click", function() {
         })
 
         // remove event
-        var playerID = $(".select").attr("data-value");
         $(".edit-events-remove").each(function() {
             if($(this).prop("checked")) {
                 var resultID = $(this).val();
@@ -305,7 +321,7 @@ $("#confirm").on("click", function() {
                     data: {
                         "target": "event",
                         "resultID": resultID,
-                        "playerID": playerID
+                        "playerID": id
                     },
                     success: function(data) {
                         //console.log(data);
@@ -324,9 +340,13 @@ $("#confirm").on("click", function() {
             $("#edit-ui-content").css("marginTop", "130px").css("marginBottom", "20px").css("opacity", "0");
             // clear content
             $("#edit-req").html("");
-
+            
             alert("update successfully!");
             // reload search
+            if (mode == "new") {
+                search.name = name;
+                $("#default").remove();
+            }
             $("#table-content").load("player_query.php?m=search", {
                 "player": search.name,
                 "country": search.country,
@@ -334,6 +354,7 @@ $("#confirm").on("click", function() {
             }, function() {
                 $(".edit").css("right", "-45px").css("opacity", "100%");
                 $(".delete").css("right", "-75px").css("opacity", "100%");
+                $(".new").css("right", "-80px").css("opacity", "100%");
             });
         }
         else {
@@ -367,6 +388,7 @@ $("#delete-confirm").on("click", function() {
             }, function() {
                 $(".edit").css("right", "-45px").css("opacity", "100%");
                 $(".delete").css("right", "-75px").css("opacity", "100%");
+                $(".new").css("right", "-80px").css("opacity", "100%");
             });
         }
     })

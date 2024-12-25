@@ -19,11 +19,11 @@
     $sexes = ["Male", "Female"];
 
     $countries = [];
-    $country_query = $conn->query("SELECT DISTINCT country
+    $country_query = $conn->query("SELECT DISTINCT country, country_noc
                                           FROM Medal
                                           ORDER BY country ASC");
     while ($country = $country_query->fetch_assoc()) {
-        $countries[] = $country["country"];
+        $countries[$country["country_noc"]] = $country["country"];
     }
     
     $mode = $_REQUEST['m'];
@@ -145,7 +145,7 @@
         // Display Edit
         case 'edit-ui':
             $playerId = $_REQUEST["p"];
-            $sql = "SELECT A.name, A.sex, A.born, A.height, A.weight, A.country,
+            $sql = "SELECT A.name, A.sex, A.born, A.height, A.weight, A.country_noc,
                     GROUP_CONCAT(DISTINCT E.event) AS events
                     FROM Athlete A
                     LEFT JOIN Details E ON A.athlete_id = E.athlete_id
@@ -171,7 +171,7 @@
                     $date = getDateArr($row["born"]);
                     $months = range(1, 12);
                     $days = getDays($date["month"], $date["year"]);
-                    $str = "<h3>Athlete ID: $playerId</h3>
+                    $str = "<h3 data-value='$playerId'>Athlete ID: $playerId</h3>
                             <div style='float: left; width: 400px'>
                                 <table>
                                     <colgroup>
@@ -205,7 +205,7 @@
                                         </tr>
                                         <tr>
                                             <td>Country</td>
-                                            <td><select id='edit-country' class='single'>".createOptions($countries, $row["country"])."</select></td>
+                                            <td><select id='edit-country' class='single'>".countryOptions($countries, $row["country_noc"])."</select></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -231,25 +231,43 @@
                 }
             }
             break;
+            
         // Edit Record
         case "edit":
             $target = $_POST["target"];
             if ($target == "basic") {
-                // Update: Athlete
-                $sql = "update Athlete
-                        set name = '".$_POST["name"]."',
-                            sex = '".$_POST["sex"]."',
-                            born = '".$_POST["birthday"]."',
-                            height = '".$_POST["height"]."',
-                            weight = '".$_POST["weight"]."',
-                            country = '".$_POST["country"]."'
-                        where athlete_id = '".$_POST["id"]."'";
+                $m = $_POST["mode"];
+                if ($m == "edit") {
+                    // Update: Athlete
+                    $sql = "update Athlete
+                            set name = '".$_POST["name"]."',
+                                sex = '".$_POST["sex"]."',
+                                born = '".$_POST["birthday"]."',
+                                height = '".$_POST["height"]."',
+                                weight = '".$_POST["weight"]."',
+                                country = '".$countries[$_POST['noc']]."',
+                                country_noc = '".$_POST["noc"]."'
+                            where athlete_id = '".$_POST["id"]."'";
+                }
+                else if ($m == "new") {
+                    // Insert: Athlete
+                    $athlete_id = $_POST["id"];
+                    $name = $_POST["name"];
+                    $sex = $_POST["sex"];
+                    $born = $_POST["birthday"];
+                    $height = $_POST["height"];
+                    $weight = $_POST["weight"];
+                    $noc = $_POST["noc"];
+                    
+                    $sql = "INSERT INTO Athlete (athlete_id, name, sex, born, height, weight, country, country_noc)
+                            VALUES ('$athlete_id', '$name', '$sex', '$born', '$height', '$weight', '$countries[$noc]', '$noc')";
+                }
                 $result = $conn->query($sql);
                 echo $result;
             }
             else if ($target == "event") {
                 // Insert: Details, Games, Results, AthleteRecords, Medal
-                // [Details]
+
                 // EDITION & EDITION_ID
                 $year = "";
                 $edition = "";
@@ -273,10 +291,8 @@
                 }
 
                 // COUNTRY_NOC
-                $sql = "SELECT noc
-                        FROM country
-                        WHERE country = '{$_POST['country']}'";
-                $noc = $conn->query($sql)->fetch_assoc()["noc"];
+                $noc = $_POST["noc"];
+                $country = $countries[$noc];
 
                 // SPORT
                 $sport = $_POST["sport"];
@@ -297,10 +313,10 @@
                 // ISTEAMSPORT (empty unless exists)
                 $result_id = "";
                 $isTeamSport = "0";
-                if ($_POST["new"] == "true") {
+                if ($_POST["new"] == "true" || $_POST["new-year"] == "true") {
                     $sql = "SELECT DISTINCT max(convert(result_id, SIGNED INT)) AS id
                             FROM Details";
-                    $result_id = $conn->query($sql)->fetch_assoc()["id"];
+                    $result_id = $conn->query($sql)->fetch_assoc()["id"] + 1;
                 }
                 else {
                     $result_id = $_POST["event"];
@@ -319,18 +335,28 @@
                 // POS (empty)
                 // MEDAL (empty)
 
+                // [Games]
+                if ($_POST["new-year"] == "true") {
+                    $sql = "INSERT INTO Games (edition, edition_id, edition_url, year, city, country_flag_url, country_noc, start_date, end_date, competition_date, isHeld)
+                            VALUES
+                            ('$edition', '$edition_id', '', '$year', '', '', '', '', '', '', '1')";
+                    $conn->query($sql);
+                }
+
+                // [Details]
                 $sql = "INSERT INTO Details (edition, edition_id, country_noc, sport, event, result_id, athlete, athlete_id, pos, medal, isTeamSport)
                         VALUES
                         ('$edition', '$edition_id', '$noc', '$sport', '$event', '$result_id', '$athlete', '$athlete_id', '', '', '$isTeamSport')";
                 $conn->query($sql);
 
+
                 // [Results]
-                if ($_POST['new'] == "true") {
+                /*if ($_POST['new'] == "true") {
                     $sql = "INSERT INTO Results (result_id, event_title, edition, edition_id, sport, sport_url, result_date, result_location, result_participants, result_format, result_detail, result_description)
                             VALUES
                             ('$result_id', '$event', '$edition', '$edition_id', '$sport', '', '', '', '', '', '', '')";
                     $conn->query($sql);
-                }
+                }*/
 
                 // [Medal]
                 if ($_POST["new-year"] == "true") {
@@ -450,6 +476,73 @@
                 $conn->query($sql);
             }
             break;
+
+            // New Athlete
+            case "new-ui":
+                // generate new athlete id
+                $sql = "SELECT DISTINCT max(convert(athlete_id, SIGNED INT)) AS id
+                        FROM Athlete";
+                $athlete_id = $conn->query($sql)->fetch_assoc()["id"] + 1;
+                
+                // create ui
+                $months = range(1, 12);
+                $days = getDays("1", "");
+                $str = "<h3 data-value='$athlete_id'>Athlete ID: $athlete_id</h3>
+                        <div style='float: left; width: 400px'>
+                            <table>
+                                <colgroup>
+                                    <col style='width: 85px'>
+                                    <col style='width: 315px'>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <td>Name</td>
+                                        <td><input type='text' id='edit-name' class='single'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sex</td>
+                                        <td><select id='edit-sex' class='single'>".createOptions($sexes, $sexes[0])."</select></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Born</td>
+                                        <td>
+                                            <input type='text' id='edit-byear' class='left'> /
+                                            <select id='edit-bmonth'>".createOptions($months, "1")."</select> / 
+                                            <select id='edit-bday' class='right'>".createOptions($days, "1")."</select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Height</td>
+                                        <td><input type='text' id='edit-height' class='single'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Weight</td>
+                                        <td><input type='text' id='edit-weight' class='single'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Country</td>
+                                        <td><select id='edit-country' class='single'>".countryOptions($countries, array_keys($countries)[0])."</select></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style='margin-left: 380px; padding-left: 0' class='modal-right'>
+                            <div style='padding-bottom: 10px'>
+                                <b style='font-size: 18px; padding-right: 20px'>Attended Events</b>
+                                <button id='edit-new-event-btn'>Add</button>
+                            </div>
+                            <div id='edit-events-container'>
+                                <table id='edit-events-table'>
+                                    <colgroup>
+                                        <col style='width: 40px'>
+                                        <col style='width: 800px'>
+                                    </colgroup>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>";
+                echo $str;
+                break;
     }
 
     // close connection
@@ -521,6 +614,17 @@
                 $output .= "selected";
             }
             $output .= ">$key</option>";
+        }
+        return $output;
+    }
+    function countryOptions(array $options, string $select) {
+        $output = "";
+        foreach ($options as $noc=>$country) {
+            $output .= "<option value='$noc' ";
+            if ($noc == trim($select)) {
+                $output .= "selected";
+            }
+            $output .= ">$country</option>";
         }
         return $output;
     }

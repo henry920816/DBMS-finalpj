@@ -405,7 +405,30 @@ input:checked + .slider:before {
     color: red;
 }
 
-.edit, .delete {
+.new {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    right: -1075px;
+    top: -24px;
+
+    background-color: white;
+    border: 3px solid rgb(1, 170, 204);
+    border-radius: 5px;
+
+    color: rgb(1, 170, 204);
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+
+    cursor: pointer;
+}
+
+.new:hover {
+    background-color: #c8eaf3;
+}
+
+.edit, .delete, .new {
     opacity: 0;
     transition: opacity 0.2s;
 }
