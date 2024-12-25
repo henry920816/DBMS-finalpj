@@ -459,10 +459,17 @@ input:checked + .slider:before {
     height: 20px;
     border: 3px solid;
     border-radius: 50%;
+    font-family: "Alatsi", sans-serif;
     text-align: center;
     font-weight: 700;
     margin-left: 10px;
     line-height: normal;
+}
+
+.medal.small {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
 }
 
 .medal.gold {
@@ -700,9 +707,18 @@ input:checked + .slider:before {
 }
 
 .country-profile-collapse-content, .country-sport-collapse-content {
+    height: 0;
     padding-left: 50px;
+    overflow: hidden;
+
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.country-sport-collapse-content {
-    font-size: 18px;
+p.country-event {
+    margin: 8px 0;
+
+    font-family: "Oxygen", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 15px;
 }

@@ -97,9 +97,21 @@
                         });
 
                         // each medal
+                        $str .= "<div style='border-bottom: 1px solid rgb(197, 197, 197); width: 500px'>";
                         foreach ($medals as $medal) {
-                            $str .= "<p>$medal - $event</p>";
+                            $str .= "<p class='country-event''>";
+                            if ($medal == "Gold") {
+                                $str .= "<span class='medal small gold'>1</span>";
+                            }
+                            else if ($medal == "Silver") {
+                                $str .= "<span class='medal small silver'>2</span>";
+                            }
+                            else if ($medal == "Bronze") {
+                                $str .= "<span class='medal small bronze'>3</span>";
+                            }
+                            $str .= " $event</p>";
                         }
+                        $str .= "</div>";
                     }
                     $str .= "</div>";
                 }

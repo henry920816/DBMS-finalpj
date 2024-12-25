@@ -1,59 +1,51 @@
 <?php
-include('database_connection.php');
+    include('database_connection.php');
 
-$method = $_GET['m'] ?? '';
+    $sql = "SELECT sport AS event, c.country AS country, name, grade, year
+            FROM AthleteRecords AS a, Country AS c
+            WHERE a.country = c.noc";
+    $result = $conn->query($sql);
 
-if ($method === 'all') {
-    $query = "SELECT sport AS event, athlete_id, country, name, grade, year FROM AthleteRecords";
-    $result = mysqli_query($conn, $query);
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo '<tr>
-                    <td>' . htmlspecialchars($row['event']) . '</td>
-                    <td>' . htmlspecialchars($row['athlete_id']) . '</td>
-                    <td>' . htmlspecialchars($row['country']) . '</td>
-                    <td>' . htmlspecialchars($row['name']) . '</td>
-                    <td>' . htmlspecialchars($row['grade']) . '</td>
-                    <td>' . htmlspecialchars($row['year']) . '</td>
-                  </tr>';
-        }
-    } else {
-        echo '<tr><td colspan="6">No data found.</td></tr>';
-    }
-} elseif ($method === 'search') {
-    $event = $_GET['event'] ?? '';
-    if (!empty($event)) {
-        $query = "SELECT sport AS event, athlete_id, country, name, grade, year FROM AthleteRecords WHERE sport = ?";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("s", $event);
-
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            if ($result && $result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo '<tr>
-                            <td>' . htmlspecialchars($row['event']) . '</td>
-                            <td>' . htmlspecialchars($row['athlete_id']) . '</td>
-                            <td>' . htmlspecialchars($row['country']) . '</td>
-                            <td>' . htmlspecialchars($row['name']) . '</td>
-                            <td>' . htmlspecialchars($row['grade']) . '</td>
-                            <td>' . htmlspecialchars($row['year']) . '</td>
-                          </tr>';
+    while ($row = $result->fetch_assoc()) {
+        $grade = explode("(", $row["grade"])[0];
+        $unit = rtrim(explode("(", $row["grade"])[1], ")");
+        if ($unit == "s") {
+            $second = 0;
+            $minute = 0;
+            $hour = 0;
+            if ($grade >= 60) {
+                $second = fmod($grade, 60);
+                $grade = ($grade - $second) / 60;
+                if ($grade >= 60) {
+                    $minute = fmod($grade, 60);
+                    $hour = ($grade - $minute) / 60;
                 }
-            } else {
-                echo '<tr><td colspan="6">No data found.</td></tr>';
             }
-        } else {
-            echo '<tr><td colspan="6">Query execution failed.</td></tr>';
+            else {
+                $second = $grade;
+            }
+            if ($hour > 0) {
+                $grade = "$hour h, $minute m, $second s";
+            }
+            else if ($minute > 0) {
+                $grade = "$minute m, $second s";
+            }
+            else {
+                $grade = "$second s";
+            }
         }
-        $stmt->close();
-    } else {
-        echo '<tr><td colspan="6">No event selected.</td></tr>';
+        else {
+            $grade = "$grade $unit";
+        }
+        echo '<tr>
+                <td>' . $row['event'] . '</td>
+                <td>' . $row['name'] . '</td>
+                <td>' . $row['country'] . '</td>
+                <td>' . $grade . '</td>
+                <td>' . $row['year'] . '</td>
+            </tr>';
     }
-} else {
-    echo '<tr><td colspan="6">Invalid request.</td></tr>';
-}
 
-mysqli_close($conn);
+    // close connection
+    $conn->close();
 ?>

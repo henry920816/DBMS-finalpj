@@ -36,6 +36,33 @@ $("#table").on("click", ".row", function(event) {
     $("#profile-req").load("country_query.php?m=profile&c=" + country);
 });
 
+$("#profile-content").on("click", ".country-profile-collapse-btn", function() {
+    var dropdown = $(this).next();
+    if (dropdown.hasClass("toggle")) {
+        dropdown.css("height", "0").removeClass("toggle");
+        $(this).find(".collapse-btn-indicator").html("keyboard_arrow_down");
+    }
+    else {
+        dropdown.css("height", dropdown[0].scrollHeight).addClass("toggle");
+        $(this).find(".collapse-btn-indicator").html("keyboard_arrow_up");
+    }
+});
+
+$("#profile-content").on("click", ".country-sport-collapse-btn", function() {
+    var dropdown = $(this).next();
+    var parent = $(this).parent();
+    if (dropdown.hasClass("toggle")) {
+        dropdown.css("height", "0").removeClass("toggle");
+        parent.css("height", "-=" + dropdown[0].scrollHeight);
+        $(this).find(".collapse-btn-indicator").html("keyboard_arrow_down");
+    }
+    else {
+        dropdown.css("height", dropdown[0].scrollHeight).addClass("toggle");
+        parent.css("height", "+=" + dropdown[0].scrollHeight);
+        $(this).find(".collapse-btn-indicator").html("keyboard_arrow_up");
+    }
+});
+
 window.onclick = function(event) {
     if (event.target == profile) {
         document.getElementsByClassName("select")[0].classList.remove("select");

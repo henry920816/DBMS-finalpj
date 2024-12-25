@@ -661,7 +661,37 @@
         if ($query->num_rows > 0) {
             $output .= "<strong>Olympic Record: </strong><br>";
             while ($row = $query->fetch_assoc()) {
-                $output .= "<span style='line-height: 30px'>".$row["sport"]." (".$row["year"].") - ".$row["grade"]."</span><br>";
+                $grade = explode("(", $row["grade"])[0];
+                $unit = rtrim(explode("(", $row["grade"])[1], ")");
+                if ($unit == "s") {
+                    $second = 0;
+                    $minute = 0;
+                    $hour = 0;
+                    if ($grade >= 60) {
+                        $second = fmod($grade, 60);
+                        $grade = ($grade - $second) / 60;
+                        if ($grade >= 60) {
+                            $minute = fmod($grade, 60);
+                            $hour = ($grade - $minute) / 60;
+                        }
+                    }
+                    else {
+                        $second = $grade;
+                    }
+                    if ($hour > 0) {
+                        $grade = "$hour h, $minute m, $second s";
+                    }
+                    else if ($minute > 0) {
+                        $grade = "$minute m, $second s";
+                    }
+                    else {
+                        $grade = "$second s";
+                    }
+                }
+                else {
+                    $grade = "$grade $unit";
+                }
+                $output .= "<span style='line-height: 30px'>".$row["sport"]." (".$row["year"].") - $grade</span><br>";
             }
         }
         return $output;
