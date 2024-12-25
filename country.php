@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <!-- Import Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
     <!-- Import Fonts -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Alatsi&family=Oxygen:wght@300;400;700&display=swap');
@@ -47,8 +49,8 @@
         <div id="table">
             <table>
                 <colgroup>
-                    <col style="width: 10%">
-                    <col style="width: 25%">
+                    <col style="width: 8%">
+                    <col style="width: 32%">
                     <col style="width: 20%">
                     <col style="width: 20%">
                     <col style="width: 20%">

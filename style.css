@@ -665,3 +665,44 @@ input:checked + .slider:before {
     font-weight: 700;
     margin: 0;
 }
+
+#country-profile {
+    height: 430px;
+    overflow-y: scroll;
+
+    margin-top: 30px;
+}
+
+.country-profile-collapse-btn, .country-sport-collapse-btn {
+    width: 95%;
+    height: 55px;
+    overflow: hidden;
+
+    padding: 12px;
+    margin-top: 15px;
+    border: 0;
+    border-bottom: 2px solid rgb(169, 169, 169);
+
+    font-family: "Oxygen", sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    text-align: left;
+    color: rgb(95, 95, 95);
+
+    cursor: pointer;
+}
+
+.collapse-btn-indicator {
+    display: inline-block;
+    vertical-align: middle;
+
+    padding: 0 10px;
+}
+
+.country-profile-collapse-content, .country-sport-collapse-content {
+    padding-left: 50px;
+}
+
+.country-sport-collapse-content {
+    font-size: 18px;
+}

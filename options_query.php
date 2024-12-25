@@ -80,4 +80,7 @@
                 echo '<option value="'.$country["country"].'">'.$country["country"].'</option>';
             }
     }
+    
+    // close connection
+    $conn->close();
 ?>
