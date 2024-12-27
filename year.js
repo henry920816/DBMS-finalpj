@@ -27,6 +27,7 @@ $("#type-option").on("change", function () {
 $("#year-option").on("change", function () {
     var year = $(this).val();
     var type = $("#type-option").val();
+    $("#year-option-default").remove();
 
     if (year !== "0" && type !== "0") {
         var url = "year_query.php?m=getSports&type=" + encodeURIComponent(type) + "&year=" + year;
@@ -52,6 +53,10 @@ $("#year-option").on("change", function () {
     }
 });
 
+$("#sport-option").on("change", function () {
+    $("#sport-option-default").remove();
+})
+
 $("#submit").on("click", function (event) {
     event.preventDefault();
     var type = $("#type-option").val();
@@ -71,3 +76,31 @@ $("#submit").on("click", function (event) {
         alert("Please select valid options for type, year, and sport.");
     }
 });
+
+$("#table").on("click", ".individual-td", function() {
+    if ($(this).attr("data-value") != "") {
+        $(this).addClass("select");
+        // get player id
+        var playerId = $(this).attr("data-value");
+
+        // show profile animation
+        $("#profile").css("height", "100%").css("opacity", "100%");
+        $("#profile-content").css("marginTop", "100px").css("marginBottom", "50px").css("opacity", "100%");
+
+        // load player profile from server
+        $("#profile-req").load("player_query.php?m=profile&p=" + playerId);
+    }
+})
+
+// close profile
+$("body").on("click", "#profile", function(event) {
+    if (!$(event.target).parents().is("#profile")) {
+        // unmark as selected
+        $(".select").removeClass("select");
+
+        $("#profile").css("height", "0").css("opacity", "0");
+        $("#profile-content").css("marginTop", "130px").css("marginBottom", "20px").css("opacity", "0");
+        // clear profile content
+        $("#profile-req").html("");
+    }
+})

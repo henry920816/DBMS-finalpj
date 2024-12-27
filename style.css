@@ -111,6 +111,14 @@ th {
     height: 60px;
 }
 
+#table tr.individual:hover {
+    background-color: rgb(255, 255, 255) !important;
+}
+
+#table tr.individual .individual-td:hover {
+    background-color: rgb(255, 244, 229) !important;
+}
+
 #table tr.search-empty:hover {
     background-color: rgb(255, 255, 255) !important;
 }
@@ -144,7 +152,7 @@ th {
     transition: margin-top 0.5s cubic-bezier(0.16, 1, 0.3, 1), margin-bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
 }
 
-.row.select {
+.row.select, .individual-td.select {
     background-color: rgb(255, 244, 229);
 }
 

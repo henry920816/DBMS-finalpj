@@ -20,7 +20,7 @@
 
     <div id="content" style="padding-top: 80px; padding-left: 20px; padding-right: 20px">
         <div style="text-align: center; font-size: 18px; padding-bottom: 20px">
-            Here you can see the top three players/countries of a sports event in a given year.
+            Here you can see the top three players/countries of a sports event in a given year. Click on the player to see their profile.
         </div>
         <div id="form">
             <form name="form" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
@@ -33,14 +33,14 @@
                     </select>
                 </div>
                 <div>
-                    <label class="oxygen-bold">Select Year</label>
-                    <select id="year-option">
+                    <label class="oxygen-bold">Year</label>
+                    <select id="year-option" style="width: 110px">
                         <option id="year-option-default" value="0">Select Year</option>
                     </select>
                 </div>
                 <div>
-                    <label class="oxygen-bold">Select Sport</label>
-                    <select id="sport-option">
+                    <label class="oxygen-bold">Sport</label>
+                    <select id="sport-option" style="width: 200px">
                         <option id="sport-option-default" value="0">Select Sport</option>
                     </select>
                 </div>
@@ -68,6 +68,12 @@
             </table>
             <div id="default">Search the year of the game to show the list!</div>
         </div>
+        <div id="profile">
+                <div id="profile-content">
+                    <h2 style="letter-spacing: 1.5px">Profile</h2>
+                    <div id="profile-req"></div>
+                </div>
+            </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

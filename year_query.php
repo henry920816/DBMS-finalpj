@@ -51,26 +51,40 @@ if ($method === 'getYears') {
 
     if ($year && $sport) {
         $query = "
-            SELECT 
+            SELECT
                 D.event AS event,
                 GROUP_CONCAT(DISTINCT CASE 
                                  WHEN D.medal = 'Gold' THEN 
-                                     CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
+                                     CASE WHEN D.isTeamSport = '1' THEN CONCAT('[ ', C.country, ' ]') ELSE A.name END 
                                  ELSE NULL END SEPARATOR ', ') AS gold,
                 GROUP_CONCAT(DISTINCT CASE 
                                  WHEN D.medal = 'Silver' THEN 
-                                     CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
+                                     CASE WHEN D.isTeamSport = '1' THEN CONCAT('[ ', C.country, ' ]') ELSE A.name END 
                                  ELSE NULL END SEPARATOR ', ') AS silver,
                 GROUP_CONCAT(DISTINCT CASE 
                                  WHEN D.medal = 'Bronze' THEN 
-                                     CASE WHEN D.isTeamSport = '1' THEN D.country_noc ELSE A.name END 
-                                 ELSE NULL END SEPARATOR ', ') AS bronze
+                                     CASE WHEN D.isTeamSport = '1' THEN CONCAT('[ ', C.country, ' ]') ELSE A.name END 
+                                 ELSE NULL END SEPARATOR ', ') AS bronze,
+                GROUP_CONCAT(DISTINCT CASE 
+                                 WHEN D.medal = 'Gold' THEN 
+                                     CASE WHEN D.isTeamSport = '1' THEN '' ELSE A.athlete_id END 
+                                 ELSE NULL END SEPARATOR ', ') AS gold_id,
+                GROUP_CONCAT(DISTINCT CASE 
+                                 WHEN D.medal = 'Silver' THEN 
+                                     CASE WHEN D.isTeamSport = '1' THEN '' ELSE A.athlete_id END 
+                                 ELSE NULL END SEPARATOR ', ') AS silver_id,
+                GROUP_CONCAT(DISTINCT CASE 
+                                 WHEN D.medal = 'Bronze' THEN 
+                                     CASE WHEN D.isTeamSport = '1' THEN '' ELSE A.athlete_id END 
+                                 ELSE NULL END SEPARATOR ', ') AS bronze_id
             FROM 
                 Details D
             INNER JOIN 
                 Games G ON D.edition_id = G.edition_id
             LEFT JOIN 
                 Athlete A ON D.athlete_id = A.athlete_id
+            LEFT JOIN 
+                Country C ON D.country_noc = C.noc
             WHERE 
                 G.year = ? AND D.sport = ? AND G.edition LIKE ?
             GROUP BY 
@@ -87,18 +101,18 @@ if ($method === 'getYears') {
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                echo '<tr>
+                echo '<tr class="individual">
                         <td>' . $row['event'] . '</td>
-                        <td>' . $row['gold'] . '</td>
-                        <td>' . $row['silver'] . '</td>
-                        <td>' . $row['bronze'] . '</td>
+                        <td class="individual-td" data-value="'.$row["gold_id"].'">' . $row['gold'] . '</td>
+                        <td class="individual-td" data-value="'.$row["silver_id"].'">' . $row['silver'] . '</td>
+                        <td class="individual-td" data-value="'.$row["bronze_id"].'">' . $row['bronze'] . '</td>
                       </tr>';
             }
         } else {
-            echo '<tr><td colspan="4">No results found for the selected filters.</td></tr>';
+            echo '<tr class="search-empty"><td colspan="4">No results found for the selected filters.</td></tr>';
         }
     } else {
-        echo '<tr><td colspan="4">Invalid year or sport selected.</td></tr>';
+        echo '<tr class="search-empty"><td colspan="4">Invalid year or sport selected.</td></tr>';
     }
 }
 
