@@ -21,7 +21,6 @@
             $year = ($_REQUEST["y"] != "new") ? $_REQUEST["y"] : "%";
             $sql = "select distinct d.sport
                     from  Details d
-                    where d.edition_id like '$year'
                     order by d.sport";
             $result = $conn->query($sql);
             while ($row = $result->fetch_assoc()) {
@@ -37,7 +36,7 @@
             $sex_opposite = ($_POST["sex"] == "Male") ? "Women" : "Men";
             $sql = "select distinct d.event, max(result_id) as result_id
                     from Details d
-                    where d.edition_id like '$year' and d.sport = '$sport'
+                    where d.sport = '$sport'
                     and d.event not like '%, $sex_opposite'
                     group by d.event
                     order by d.event";
