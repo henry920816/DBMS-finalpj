@@ -365,7 +365,7 @@
                     if ($check == "0") {
                         $sql = "INSERT INTO Medal (edition_id, edition, year, country, country_noc, gold, silver, bronze)
                                 VALUES
-                                ('$edition_id', '$edition', '$year', '{$_POST['country']}', '$noc', 0, 0, 0)";
+                                ('$edition_id', '$edition', '$year', '$country', '$noc', 0, 0, 0)";
                         $conn->query($sql);
                     }
                 }
